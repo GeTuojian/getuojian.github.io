@@ -13,8 +13,8 @@ categories:
 ### 全局设置
 
 ```bash
-$ git config --global user.name "Your Name"
-$ git config --global user.email "email@example.com"
+git config --global user.name "Your Name"
+git config --global user.email "email@example.com"
 ```
 
 ### 设置VSCode作为difftool
@@ -22,13 +22,13 @@ $ git config --global user.email "email@example.com"
 1. 命令行运行
 
    ```bash
-   $ git config --global core.editor "code --wait"
+   git config --global core.editor "code --wait"
    ```
 
 2. 现在可以在VSCode中配置git
 
    ```bash
-   $ git config --global -e
+   git config --global -e
    ```
 
 3. 在配置文件中添加：
@@ -47,34 +47,34 @@ $ git config --global user.email "email@example.com"
 ### 创建git仓库
 
 ```bash
-$ git init
+git init
 ```
 
 ### 查看工作区状态
 
 ```bash
-$ git status
-$ git status -s
-$ git status --short
+git status
+git status -s
+git status --short
 ```
 
 ### 跟踪/添加/暂存文件
 
 ```bash
-$ git add filename
-$ git add *
+git add filename
+git add *
 ```
 
 ### 提交文件并添加修改说明
 
 ```bash
-$ git commit -m "text note"
+git commit -m "text note"
 
 #使用编辑器提交文件（默认会将最后一次 git status返回的内容，以注释的形式加入）
-$ git commit
+git commit
 
 #使用编辑器提交文件（默认会将最后一次 git status、git diff的返回内容，以注释的形式加入）
-$ git commit -v
+git commit -v
 ```
 
 ### 比较文件
@@ -183,16 +183,16 @@ git log --pretty=format:"%h %s" --graph
 ### 版本退回
 
 ```bash
-$ git reset —-hard HEAD^
-$ git reset —-hard HEAD^^
-$ git reset —-hard HEAD~5
+git reset —-hard HEAD^
+git reset —-hard HEAD^^
+git reset —-hard HEAD~5
 ```
 
 ### 版本前进
 
 ```bash
-$ git reflog
-$ git reset —-hard commitid
+git reflog
+git reset —-hard commitid
 ```
 
 ### 撤销操作
@@ -202,7 +202,6 @@ git commit --amend
 ```
 
 - 如果没有任何修改（暂存区没有文件），则仅修改上次的提交信息（说明文字）
-
 - 如果有修改、有暂存，则将此次暂存文件和上一次提交的快照合并，并弹出修改说明信息的窗口
 
 ### 取消暂存的文件
@@ -236,9 +235,9 @@ git checkout -- filename
 如果误删文件后，想追回，且想追回曾经某次commit的版本（如果只想追回最新版本，执行后两句即可）：
 
 ```bash
-$ git reset commitid  test.txt
-$ git checkout —- test.txt
-$ git commit -m “track back only one deleted file”
+git reset commitid  test.txt
+git checkout —- test.txt
+git commit -m “track back only one deleted file”
 ```
 
 ### 忽略文件
@@ -256,13 +255,13 @@ Github给我们提供了预设的[模板](https://github.com/github/gitignore)�
 
 ```bash
 #克隆远程仓库
-$ git clone git@github.com:GeTuojian/the-craft-of-selfteaching.git
+git clone git@github.com:GeTuojian/the-craft-of-selfteaching.git
 #克隆指定分支
-$ git clone -b dev git@github.com:GeTuojian/the-craft-of-selfteaching.git
+git clone -b dev git@github.com:GeTuojian/the-craft-of-selfteaching.git
 #查看远程仓库的路径
-$ git remote -v
-$ origin git@github.com:GeTuojian/the-craft-of-selfteaching.git (fetch)
-$ origin git@github.com:GeTuojian/the-craft-of-selfteaching.git (push)
+git remote -v
+origin git@github.com:GeTuojian/the-craft-of-selfteaching.git (fetch)
+origin git@github.com:GeTuojian/the-craft-of-selfteaching.git (push)
 ```
 
 ### 添加远程仓库
@@ -334,6 +333,8 @@ git push <remote> <local branch name>:<remote branch to push into>
 git tag
 git tag -l 'V1.8.5*'
 ```
+
+
 
 
 
