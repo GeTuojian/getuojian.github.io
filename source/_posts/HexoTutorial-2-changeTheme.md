@@ -19,6 +19,8 @@ cd blog_name
 git clone https://github.com/theme-next/hexo-theme-next themes/next
 ```
 
+<!--more-->
+
 ## 启用主题
 
 修改`_config.yml`中的`theme`字段：

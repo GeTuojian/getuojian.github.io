@@ -18,6 +18,8 @@ categories:
 - 安装[Git](https://git-scm.com/)
 - 注册[GitHub](https://github.com/)
 
+<!--more-->
+
 ### 解决`npm`全局安装时的权限问题
 
 通过在根目录创建一个隐藏文件夹，来解决`npm`全局安装包时的权限问题：

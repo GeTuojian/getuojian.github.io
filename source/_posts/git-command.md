@@ -17,6 +17,8 @@ git config --global user.name "Your Name"
 git config --global user.email "email@example.com"
 ```
 
+<!--more-->
+
 ### 设置VSCode作为difftool
 
 1. 命令行运行
@@ -39,8 +41,6 @@ git config --global user.email "email@example.com"
    [difftool "default-difftool"]
        cmd = code --wait --diff $LOCAL $REMOTE
    ```
-
-
 
 ## 本地仓库基本命令
 

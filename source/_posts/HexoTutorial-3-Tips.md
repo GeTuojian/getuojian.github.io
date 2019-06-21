@@ -14,6 +14,8 @@ categories:
 
 为了避免每次更新blog时，将CNAME文件删除，需要在`blog_name/source`文件夹下新建一个包含相同内容的`CNAME`文件，然后`hexo g`、`hexo d`进行同步。
 
+<!--more-->
+
 ## 保留README.md文件
 
 为了让Repository依然保留一个`README.md`文件，同时不被`hexo`渲染，需要手动在`source`目录下添加一个README.md，并将`_config.yml`中的`skip_render`参数改为：
