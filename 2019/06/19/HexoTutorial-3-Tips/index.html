@@ -443,26 +443,20 @@
         <h2 id="保留CNAME文件"><a href="#保留CNAME文件" class="headerlink" title="保留CNAME文件"></a>保留CNAME文件</h2><p>如果GitHub Pages配置了自定义的域名，则会在Repository下生成一个<code>CNAME</code>的文件，里面包含了配置好的自定义域名。</p>
 <p>为了避免每次更新blog时，将CNAME文件删除，需要在<code>blog_name/source</code>文件夹下新建一个包含相同内容的<code>CNAME</code>文件，然后<code>hexo g</code>、<code>hexo d</code>进行同步。</p>
 <a id="more"></a>
-
 <h2 id="保留README-md文件"><a href="#保留README-md文件" class="headerlink" title="保留README.md文件"></a>保留README.md文件</h2><p>为了让Repository依然保留一个<code>README.md</code>文件，同时不被<code>hexo</code>渲染，需要手动在<code>source</code>目录下添加一个README.md，并将<code>_config.yml</code>中的<code>skip_render</code>参数改为：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">skip_render:</span> <span class="string">README.md</span></span><br></pre></td></tr></table></figure>
-
 <p>然后<code>hexo g</code>、<code>hexo d</code>进行同步。</p>
 <h2 id="管理Hexo源文件"><a href="#管理Hexo源文件" class="headerlink" title="管理Hexo源文件"></a>管理Hexo源文件</h2><blockquote>
 <p>这里我们选择在blog的仓库下建立新的分支，同时管理source code和生成的页面。</p>
 </blockquote>
 <p>在源文件根目录创建git仓库：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> blog-name</span><br><span class="line">git init</span><br></pre></td></tr></table></figure>
-
 <p>添加<code>.gitignore</code>，剔除一些不必要的文件，主要包含：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.DS_Store</span><br><span class="line">Thumbs.db</span><br><span class="line">db.json</span><br><span class="line">debug.log</span><br><span class="line">node_modules/</span><br><span class="line">public/</span><br><span class="line">.deploy/</span><br><span class="line">themes/</span><br><span class="line">.deploy_git/</span><br><span class="line">_config.yml</span><br></pre></td></tr></table></figure>
-
 <p>添加远程仓库路径：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin git@github.com:GeTuojian/getuojian.github.io.git</span><br></pre></td></tr></table></figure>
-
 <p>提交本地文件并推送至远程分支：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add *</span><br><span class="line">git commit -m <span class="string">"create source branch"</span></span><br><span class="line">git push origin master:<span class="built_in">source</span></span><br></pre></td></tr></table></figure>
-
 <p>最后一句的含义是，将<code>本地仓库的master分支</code>推送至<code>远程origin仓库的source分支</code>，而远程仓库的master分支已经被用来做hexo的部署（还记得hexo d么？）。</p>
 
       
