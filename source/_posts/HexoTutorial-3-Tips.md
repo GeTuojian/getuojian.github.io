@@ -67,3 +67,36 @@ git push origin master:source
 ```
 
 最后一句的含义是，将`本地仓库的master分支`推送至`远程origin仓库的source分支`，而远程仓库的master分支已经被用来做hexo的部署（还记得hexo d么？）。
+
+## 启用mathjax
+
+在主题配置`themes/next/_config.yml`中修改：
+
+```yaml
+# Math Equations Render Support
+math:
+  enable: true
+  per_page: true	#设置为true,不会在每页渲染，需在post开头定义mathjax: true
+  
+  engine: mathjax
+  #engine: katex
+```
+
+安装渲染器：
+
+```bash
+$ npm un hexo-renderer-marked --save
+$ npm i hexo-renderer-kramed --save 
+```
+
+重新生成静态页面：
+
+```bash
+$ hexo clean && hexo g -d
+# or hexo clean && hexo s
+```
+
+
+
+
+
