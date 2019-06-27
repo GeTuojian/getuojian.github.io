@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Sturm und Drang">
 <meta property="og:description" content="保留CNAME文件如果GitHub Pages配置了自定义的域名，则会在Repository下生成一个CNAME的文件，里面包含了配置好的自定义域名。 为了避免每次更新blog时，将CNAME文件删除，需要在blog_name/source文件夹下新建一个包含相同内容的CNAME文件，然后hexo g、hexo d进行同步。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-06-25T12:58:45.757Z">
+<meta property="og:updated_time" content="2019-06-27T06:37:36.707Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hexo基础教程（3）：使用小Tips">
 <meta name="twitter:description" content="保留CNAME文件如果GitHub Pages配置了自定义的域名，则会在Repository下生成一个CNAME的文件，里面包含了配置好的自定义域名。 为了避免每次更新blog时，将CNAME文件删除，需要在blog_name/source文件夹下新建一个包含相同内容的CNAME文件，然后hexo g、hexo d进行同步。">
@@ -388,7 +388,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-06-25 20:58:45" itemprop="dateModified" datetime="2019-06-25T20:58:45+08:00">2019-06-25</time>
+                <time title="修改时间：2019-06-27 14:37:36" itemprop="dateModified" datetime="2019-06-27T14:37:36+08:00">2019-06-27</time>
               
             
           </span>
@@ -459,11 +459,16 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add *</span><br><span class="line">git commit -m <span class="string">"create source branch"</span></span><br><span class="line">git push origin master:<span class="built_in">source</span></span><br></pre></td></tr></table></figure>
 <p>最后一句的含义是，将<code>本地仓库的master分支</code>推送至<code>远程origin仓库的source分支</code>，而远程仓库的master分支已经被用来做hexo的部署（还记得hexo d么？）。</p>
 <h2 id="启用mathjax"><a href="#启用mathjax" class="headerlink" title="启用mathjax"></a>启用mathjax</h2><p>在主题配置<code>themes/next/_config.yml</code>中修改：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Math Equations Render Support</span></span><br><span class="line"><span class="attr">math:</span></span><br><span class="line"><span class="attr">  enable:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  per_page:</span> <span class="literal">true</span>	<span class="comment">#设置为true,不会在每页渲染，需在post开头定义mathjax: true</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">  engine:</span> <span class="string">mathjax</span></span><br><span class="line">  <span class="comment">#engine: katex</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Math Equations Render Support</span></span><br><span class="line"><span class="attr">math:</span></span><br><span class="line"><span class="attr">  enable:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  per_page:</span> <span class="literal">true</span>	<span class="comment">#设置为true,不会在每页渲染，需在post开头声明 mathjax: true</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">  engine:</span> <span class="string">mathjax</span></span><br><span class="line">  <span class="comment">#engine: katex</span></span><br></pre></td></tr></table></figure>
 <p>安装渲染器：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ npm un hexo-renderer-marked --save</span><br><span class="line">$ npm i hexo-renderer-kramed --save</span><br></pre></td></tr></table></figure>
 <p>重新生成静态页面：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ hexo clean &amp;&amp; hexo g -d</span><br><span class="line"><span class="comment"># or hexo clean &amp;&amp; hexo s</span></span><br></pre></td></tr></table></figure>
+<h2 id="引用本地图片"><a href="#引用本地图片" class="headerlink" title="引用本地图片"></a>引用本地图片</h2><p>在<code>hexo</code>配置文件<code>_config.yml</code>中开启：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<p>在根目录下执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install https://github.com/CodeFalling/hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+<p>使用<code>hexo n &quot;xxx&quot;</code>生成新文章，会在<code>source</code>目录下同时生成<code>xxx.md</code>文件及<strong>同名文件夹</strong>，将图片放在文件夹中，并使用markdown语法在文章中引用即可，引用路径为<code>xxx/abc.img</code>。</p>
 
       
     </div>
@@ -676,7 +681,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#保留CNAME文件"><span class="nav-number">1.</span> <span class="nav-text">保留CNAME文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#保留README-md文件"><span class="nav-number">2.</span> <span class="nav-text">保留README.md文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#管理Hexo源文件"><span class="nav-number">3.</span> <span class="nav-text">管理Hexo源文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启用mathjax"><span class="nav-number">4.</span> <span class="nav-text">启用mathjax</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#保留CNAME文件"><span class="nav-number">1.</span> <span class="nav-text">保留CNAME文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#保留README-md文件"><span class="nav-number">2.</span> <span class="nav-text">保留README.md文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#管理Hexo源文件"><span class="nav-number">3.</span> <span class="nav-text">管理Hexo源文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启用mathjax"><span class="nav-number">4.</span> <span class="nav-text">启用mathjax</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用本地图片"><span class="nav-number">5.</span> <span class="nav-text">引用本地图片</span></a></li></ol></div>
             
 
           </div>
