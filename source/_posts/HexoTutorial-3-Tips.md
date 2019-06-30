@@ -76,7 +76,7 @@ git push origin master:source
 # Math Equations Render Support
 math:
   enable: true
-  per_page: true	#设置为true,不会在每页渲染，需在post开头定义mathjax: true
+  per_page: true	#设置为true,不会在每页渲染，需在post开头声明 mathjax: true
   
   engine: mathjax
   #engine: katex
@@ -96,7 +96,19 @@ $ hexo clean && hexo g -d
 # or hexo clean && hexo s
 ```
 
+## 引用本地图片
 
+在`hexo`配置文件` _config.yml`中开启：
 
+```yaml
+post_asset_folder: true
+```
 
+在根目录下执行：
+
+```bash
+npm install https://github.com/CodeFalling/hexo-asset-image --save
+```
+
+使用`hexo n "xxx"`生成新文章，会在`source`目录下同时生成`xxx.md`文件及**同名文件夹**，将图片放在文件夹中，并使用markdown语法在文章中引用即可，引用路径为`xxx/abc.img`。
 
