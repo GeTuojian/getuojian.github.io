@@ -96,19 +96,21 @@
 
 
 
-  <meta name="description" content="本系列基于Richard S. Sutton的教材《Reinforcement Learning: An Introduction》，总结并翻译各章节核心内容，对其做概要性的整理，复写书中主要样例的代码。  参考资料 主要教材 《Reinforcement Learning: An Introduction》 主页：Richard S. Sutton Slide &amp;amp; Video：谷歌网盘">
+  <meta name="description" content="本系列基于d.silver的强化学习课程，及Richard S. Sutton的教材《Reinforcement Learning: An Introduction》，整理并汇总其中的核心内容，并做一定的注解，复写课程/书中的主要样例代码。  参考资料 主要教材 《Reinforcement Learning: An Introduction》 主页：Richard S. Sutton Slid">
 <meta name="keywords" content="MachineLearning,ReinforcementLearning">
 <meta property="og:type" content="article">
 <meta property="og:title" content="强化学习（1）：简介">
 <meta property="og:url" content="https://www.union-capital.cn/2019/06/25/ReinforcementLearning-1-Introduction/index.html">
 <meta property="og:site_name" content="Sturm und Drang">
-<meta property="og:description" content="本系列基于Richard S. Sutton的教材《Reinforcement Learning: An Introduction》，总结并翻译各章节核心内容，对其做概要性的整理，复写书中主要样例的代码。  参考资料 主要教材 《Reinforcement Learning: An Introduction》 主页：Richard S. Sutton Slide &amp;amp; Video：谷歌网盘">
+<meta property="og:description" content="本系列基于d.silver的强化学习课程，及Richard S. Sutton的教材《Reinforcement Learning: An Introduction》，整理并汇总其中的核心内容，并做一定的注解，复写课程/书中的主要样例代码。  参考资料 主要教材 《Reinforcement Learning: An Introduction》 主页：Richard S. Sutton Slid">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://www.union-capital.cn/2019/06/25/ReinforcementLearning-1-Introduction/ML.png">
-<meta property="og:updated_time" content="2019-06-30T14:57:46.327Z">
+<meta property="og:image" content="https://www.union-capital.cn/2019/06/25/ReinforcementLearning-1-Introduction/MLbranches.png">
+<meta property="og:image" content="https://www.union-capital.cn/2019/06/25/ReinforcementLearning-1-Introduction/RLfaces.png">
+<meta property="og:updated_time" content="2019-07-02T13:56:24.850Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="强化学习（1）：简介">
-<meta name="twitter:description" content="本系列基于Richard S. Sutton的教材《Reinforcement Learning: An Introduction》，总结并翻译各章节核心内容，对其做概要性的整理，复写书中主要样例的代码。  参考资料 主要教材 《Reinforcement Learning: An Introduction》 主页：Richard S. Sutton Slide &amp;amp; Video：谷歌网盘">
+<meta name="twitter:description" content="本系列基于d.silver的强化学习课程，及Richard S. Sutton的教材《Reinforcement Learning: An Introduction》，整理并汇总其中的核心内容，并做一定的注解，复写课程/书中的主要样例代码。  参考资料 主要教材 《Reinforcement Learning: An Introduction》 主页：Richard S. Sutton Slid">
 <meta name="twitter:image" content="https://www.union-capital.cn/2019/06/25/ReinforcementLearning-1-Introduction/ML.png">
 
 
@@ -390,7 +392,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-06-30 22:57:46" itemprop="dateModified" datetime="2019-06-30T22:57:46+08:00">2019-06-30</time>
+                <time title="修改时间：2019-07-02 21:56:24" itemprop="dateModified" datetime="2019-07-02T21:56:24+08:00">2019-07-02</time>
               
             
           </span>
@@ -443,10 +445,10 @@
 
       
         <blockquote>
-<p>本系列基于Richard S. Sutton的教材《Reinforcement Learning: An Introduction》，总结并翻译各章节核心内容，对其做概要性的整理，复写书中主要样例的代码。</p>
+<p>本系列基于d.silver的强化学习课程，及Richard S. Sutton的教材《Reinforcement Learning: An Introduction》，整理并汇总其中的核心内容，并做一定的注解，复写课程/书中的主要样例代码。</p>
 </blockquote>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
-<li>主要教材<ul>
+<li><strong>主要教材</strong><ul>
 <li><a href="http://incompleteideas.net/book/the-book.html" target="_blank" rel="noopener">《Reinforcement Learning: An Introduction》</a></li>
 <li>主页：<a href="http://incompleteideas.net/" target="_blank" rel="noopener">Richard S. Sutton</a></li>
 <li>Slide &amp; Video：<a href="https://drive.google.com/drive/folders/0B3w765rOKuKANmxNbXdwaE1YU1k" target="_blank" rel="noopener">谷歌网盘</a></li>
@@ -457,7 +459,7 @@
 <ul>
 <li><a href="http://web.stanford.edu/class/psych209/" target="_blank" rel="noopener">PSYCH 209: Neural Network Models of Cognition: Principles and Applications</a></li>
 <li><a href="https://github.com/udacity/deep-reinforcement-learning" target="_blank" rel="noopener">udacity-deep-reinforcement-learning</a></li>
-<li><a href="http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html" target="_blank" rel="noopener">UCL Course on RL</a></li>
+<li><strong><a href="http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html" target="_blank" rel="noopener">UCL Course on RL</a></strong></li>
 </ul>
 </li>
 <li>进阶教材：<a href="ed2k://|file|B52A9923923FF555110AE81AD0D384A7.pdf|14958513|20928309F624388FB3F59F7E1F993937|h=PDH6JPZEHNPHFP27BGNVPOUQDHIX4KXP|/" target="_blank" rel="noopener">《Reinforcement Learning: State of the Art》- Wiering M.A.</a></li>
@@ -478,8 +480,29 @@
 <li><strong><em>探索(exploration)</em></strong>和<strong><em>利用(exploitation)</em></strong>的权衡，是强化学习的算法中考虑的重点之一。</li>
 <li>如何通过与未知环境的互动，达到<strong><em>全局目标</em></strong>的最优。监督学习通常只考虑子问题的最优（样本集上的最优），不存在交互与优化的过程。</li>
 </ol>
-<p><img src="/2019/06/25/ReinforcementLearning-1-Introduction/ML.png" alt="机器学习范畴"></p>
-<h2 id="强化学习的主要构成元素"><a href="#强化学习的主要构成元素" class="headerlink" title="强化学习的主要构成元素"></a>强化学习的主要构成元素</h2>
+<h3 id="强化学习和机器学习的交集"><a href="#强化学习和机器学习的交集" class="headerlink" title="强化学习和机器学习的交集"></a>强化学习和机器学习的交集</h3><p><img src="/2019/06/25/ReinforcementLearning-1-Introduction/ML.png" alt="机器学习范畴"></p>
+<p><img src="/2019/06/25/ReinforcementLearning-1-Introduction/MLbranches.png" alt="强化学习和机器学习"></p>
+<h3 id="强化学习的千面"><a href="#强化学习的千面" class="headerlink" title="强化学习的千面"></a>强化学习的千面</h3><p>不同学科都对强化学习有一定的研究，在不同领域有不同研究意义，但方法论相似：</p>
+<p><img src="/2019/06/25/ReinforcementLearning-1-Introduction/RLfaces.png" alt="强化学习千面"></p>
+<h2 id="关键概念"><a href="#关键概念" class="headerlink" title="关键概念"></a>关键概念</h2><h3 id="observation、reward、action"><a href="#observation、reward、action" class="headerlink" title="observation、reward、action"></a>observation、reward、action</h3><p><strong>Reward Hypothesis</strong></p>
+<blockquote>
+<p>All <strong>goals</strong> can be described by the maximisation of expected cumulative reward.</p>
+<p>所有<strong>目标</strong>都可以描述成最大化期望累计回报。</p>
+</blockquote>
+<script type="math/tex; mode=display">
+\begin{align}
+& reward:R_{t}\\
+& observation:O_{t}\\
+& action:A_{t}
+\end{align}</script><h3 id="history、state"><a href="#history、state" class="headerlink" title="history、state"></a>history、state</h3><script type="math/tex; mode=display">
+\begin{align}
+& H_{t}=O_{1}, R_{1}, A_{1}, \ldots, A_{t-1}, O_{t}, R_{t}\\
+& S_{t}=f\left(H_{t}\right)
+\end{align}</script><h3 id="environment-state、agent-state"><a href="#environment-state、agent-state" class="headerlink" title="environment state、agent state"></a>environment state、agent state</h3><script type="math/tex; mode=display">
+\begin{align}
+& S_{t}^{e} \\
+&S_{t}^{a}=f\left(H_{t}\right)
+\end{align}</script>
       
     </div>
 
@@ -529,6 +552,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/02/splash-jupyter-tut/" rel="prev" title="splash-jupyter-tut">
+                splash-jupyter-tut <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -597,7 +624,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-count">7</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -687,7 +714,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">1.</span> <span class="nav-text">参考资料</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#强化学习简介"><span class="nav-number">2.</span> <span class="nav-text">强化学习简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#是什么是强化学习？"><span class="nav-number">2.1.</span> <span class="nav-text">是什么是强化学习？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#强化学习的主要构成元素"><span class="nav-number">3.</span> <span class="nav-text">强化学习的主要构成元素</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">1.</span> <span class="nav-text">参考资料</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#强化学习简介"><span class="nav-number">2.</span> <span class="nav-text">强化学习简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#是什么是强化学习？"><span class="nav-number">2.1.</span> <span class="nav-text">是什么是强化学习？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#强化学习和机器学习的交集"><span class="nav-number">2.2.</span> <span class="nav-text">强化学习和机器学习的交集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#强化学习的千面"><span class="nav-number">2.3.</span> <span class="nav-text">强化学习的千面</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关键概念"><span class="nav-number">3.</span> <span class="nav-text">关键概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#observation、reward、action"><span class="nav-number">3.1.</span> <span class="nav-text">observation、reward、action</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#history、state"><span class="nav-number">3.2.</span> <span class="nav-text">history、state</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#environment-state、agent-state"><span class="nav-number">3.3.</span> <span class="nav-text">environment state、agent state</span></a></li></ol></li></ol></div>
             
 
           </div>
