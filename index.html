@@ -344,7 +344,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/07/02/jupyter-installation-usage/" class="post-title-link" itemprop="url">jupyter-installation-usage</a>
+                <a href="/2019/07/02/jupyter-installation-usage/" class="post-title-link" itemprop="url">Jupyterlab的安装与配置</a>
               
             
           </h1>
@@ -373,8 +373,42 @@
             
 
             
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-03 22:53:20" itemprop="dateModified" datetime="2019-07-03T22:53:20+08:00">2019-07-03</time>
+              
+            
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Python教程/" itemprop="url" rel="index"><span itemprop="name">Python教程</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -406,7 +440,56 @@
       
         
           
-            
+            <h2 id="配置Jupyter-lab"><a href="#配置Jupyter-lab" class="headerlink" title="配置Jupyter lab"></a>配置Jupyter lab</h2><p>打开 Terminal，输入以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jupyter lab --generate-config</span><br></pre></td></tr></table></figure>
+<p>这会在 <code>~/.jupyter/</code> 目录下生成一个 <code>jupyter_notebook_config.py</code> 文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/.jupyter</span><br><span class="line">code jupyter_notebook_config.py</span><br></pre></td></tr></table></figure>
+<p>上面的 code 命令，需要你已经安装 Visual Studio Code，并且在已经在其中设置了 <code>Install &#39;code&#39; command in PATH</code>。</p>
+<p>文件内容很长，有空可以仔细看。可以直接将以下内容拷贝粘贴到文件底部，根据需求修改：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#c.NotebookApp.token = ''</span><br><span class="line">#c.NotebookApp.open_browser = False</span><br><span class="line">#c.NotebookApp.notebook_dir = '~/'</span><br><span class="line">#c.NotebookApp.default_url = '/tree'</span><br></pre></td></tr></table></figure>
+<p>逐条解释一下：</p>
+<blockquote>
+<p><code>c.NotebookApp.token = &#39;&#39;</code></p>
+</blockquote>
+<p>每次打开 Jupter，它都会给你生成一个新的 Token —— 这是安全策略。但是，如果你只是在自己的电脑上使用，那么，这就给你制造了麻烦，因为若是你想同时用另外一个浏览器打开它，那你就需要从 Terminal 里拷贝那个 Token 出来。所以，你可以在配置文件里直接把它设置为空。</p>
+<blockquote>
+<p><code>c.NotebookApp.open_browser = False</code></p>
+</blockquote>
+<p>每次你执行 <code>jupyter lab</code> 或者 <code>jupyter notebook</code> 命令的时候，它都会使用系统默认浏览器。</p>
+<p>每个人的习惯不一样。比如我，会想到用一个平时不怎么用的浏览器专门用在 Jupyter 上，这样会防止自己在关闭其它网页的时候不小心把 Jupyter 关掉…… 那我就会把这项设定为 <code>False</code>。</p>
+<blockquote>
+<p><code>c.NotebookApp.notebook_dir = &#39;~/&#39;</code></p>
+</blockquote>
+<p>在 Terminal 中执行 <code>jupyter</code> 命令的时候，它默认是在你当前所在的工作目录打开 <code>jupyter</code>，这同样是出于安全考虑。但是，如果你只是在自己的电脑上使用，且只有自己在使用，那么莫不如直接把它设置成 <code>~/</code>，即，你的用户根目录，这样会很方便地访问各种地方的文件……</p>
+<blockquote>
+<p><code>c.NotebookApp.default_url = &#39;/tree&#39;</code></p>
+</blockquote>
+<p>这一项留给那些依然习惯于使用 jupter notebook 的人，这样设置之后，即便是输入 <code>jupyter lab</code> 命令，打开的还是 jupyter notebook。</p>
+<blockquote>
+<p>c.NotebookApp.port = 1234</p>
+</blockquote>
+<p>修改监听端口，防止与常用端口冲突。</p>
+<p>在 Terminal 里常用的与 Jupyter 有关的命令有：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">jupyter lab</span><br><span class="line">jupyter lab --version</span><br><span class="line">conda install -c conda-forge jupyterlab <span class="comment"># 这是用来升级 jupyter lab 到最新版的方法</span></span><br><span class="line">jupyter notebook list                   <span class="comment"># 查看正在运行的 jupyter lab/notebook</span></span><br><span class="line">jupyter notebook stop                   <span class="comment"># 停止 jupyter lab/notebook 服务</span></span><br></pre></td></tr></table></figure>
+<h2 id="将Jupyter-lab配置成系统服务"><a href="#将Jupyter-lab配置成系统服务" class="headerlink" title="将Jupyter lab配置成系统服务"></a>将Jupyter lab配置成系统服务</h2><p>如果，你厌烦每次都要跑到 Terminal 里启动 Jupyter lab，可以把它配置成系统服务，每次开机启动它就自动运行。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">code ~/Library/LaunchAgents/com.jupyter.lab.plist</span><br></pre></td></tr></table></figure>
+<p>这条命令会让 Visual Studio Code 创建 <code>~/Library/LaunchAgents/com.jupyter.lab.plist</code>文件并打开。</p>
+<p>在其中拷贝粘贴以下内容，注意，要把其中的 <code>your_username</code> 修改为你的用户名：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">plist</span> <span class="attr">version</span>=<span class="string">"1.0"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dict</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">key</span>&gt;</span>Label<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">string</span>&gt;</span>local.job<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">key</span>&gt;</span>ProgramArguments<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">array</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">string</span>&gt;</span>/Users/your_username/anaconda3/bin/jupyter<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">string</span>&gt;</span>lab<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">string</span>&gt;</span>--no-browser<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">string</span>&gt;</span>--notebook-dir=/Users/your_username/<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">array</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">key</span>&gt;</span>RunAtLoad<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">true</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">key</span>&gt;</span>StandardErrorPath<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">string</span>&gt;</span>/tmp/local.job.err<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">key</span>&gt;</span>StandardOutPath<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">string</span>&gt;</span>/tmp/local.job.out<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dict</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plist</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>如果之前在<code>jupyter_notebook_config.py</code> 文件里已经设置过</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">c.NotebookApp.open_browser = False</span><br><span class="line">c.NotebookApp.notebook_dir = '~/'</span><br></pre></td></tr></table></figure>
+<p>那么这两行就可以不要了：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">string</span>&gt;</span>--no-browser<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">string</span>&gt;</span>--notebook-dir=/Users/your_username/<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>而后在 Terminal 里执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">launchctl load ~/Library/LaunchAgents/com.jupyter.lab.plist</span><br></pre></td></tr></table></figure>
+<p>如果你想重新启动这个服务，那么执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">launchctl unload ~/Library/LaunchAgents/com.jupyter.lab.plist</span><br><span class="line">launchctl load ~/Library/LaunchAgents/com.jupyter.lab.plist</span><br></pre></td></tr></table></figure>
+<h2 id="输出所有变量内容"><a href="#输出所有变量内容" class="headerlink" title="输出所有变量内容"></a>输出所有变量内容</h2><p>默认情况下，Code Cell 只输出最后一个可以被 evaluate 的值，用 <code>_</code> 代表之前刚刚被 evaluate 的值。</p>
+<p>于是，为了显示最近 evaluate 的多个值，我们总是不得不使用很多的 <code>print()</code>……</p>
+<p>如果觉得这事儿比较烦的话，可以在 Cell 最上面写上：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> IPython.core.interactiveshell <span class="keyword">import</span> InteractiveShell</span><br><span class="line">InteractiveShell.ast_node_interactivity = <span class="string">"all"</span></span><br></pre></td></tr></table></figure>
+<p>如果还想更省事儿一点，就把这个设置写入配置文件：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">c.InteractiveShell.ast_node_interactivity = <span class="string">"all"</span></span><br></pre></td></tr></table></figure>
           
         
       
@@ -462,7 +545,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.union-capital.cn/2019/07/02/splash-jupyter-tut/">
+    <link itemprop="mainEntityOfPage" href="https://www.union-capital.cn/2019/07/02/splash-tut/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Ge Tuojian">
@@ -482,7 +565,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/07/02/splash-jupyter-tut/" class="post-title-link" itemprop="url">splash-jupyter-tut</a>
+                <a href="/2019/07/02/splash-tut/" class="post-title-link" itemprop="url">Splash的安装与使用</a>
               
             
           </h1>
@@ -511,8 +594,42 @@
             
 
             
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-05 23:53:54" itemprop="dateModified" datetime="2019-07-05T23:53:54+08:00">2019-07-05</time>
+              
+            
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/爬虫教程/" itemprop="url" rel="index"><span itemprop="name">爬虫教程</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -544,7 +661,80 @@
       
         
           
-            
+            <p>爬虫过程中经常需要处理<code>js动态加载</code>的页面，通常的处理方式有两种：一种是使用<strong>Selenium</strong>调用浏览器渲染页面，另一种是使用<strong>Splash</strong>进行渲染。Splash更轻量级，经常配合Scrapy使用，本文介绍其安装与使用方法。</p>
+<h2 id="安装Splash"><a href="#安装Splash" class="headerlink" title="安装Splash"></a>安装Splash</h2><ol>
+<li><p>安装<a href="http://docker.io/" target="_blank" rel="noopener">Docker</a>。</p>
+</li>
+<li><p>下载镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker pull scrapinghub/splash</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动容器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker run -it -p 8050:8050 scrapinghub/splash</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>访问<a href="http://localhost:8050/即可使用splash。" target="_blank" rel="noopener">http://localhost:8050/即可使用splash。</a></p>
+</li>
+</ol>
+<h2 id="使用Splash-Jupyter"><a href="#使用Splash-Jupyter" class="headerlink" title="使用Splash Jupyter"></a>使用Splash Jupyter</h2><ol>
+<li><p>下载镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker pull scrapinghub/splash-jupyter</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动容器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -p 8888:8888 -it scrapinghub/splash-jupyter</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>访问<a href="http://localhost:8888/即可使用splash" target="_blank" rel="noopener">http://localhost:8888/即可使用splash</a> jupyter。</p>
+</li>
+</ol>
+<p>为了避免和本机的<code>jupyterlab</code>冲突，建议修改本机的jupyterlab监听端口。</p>
+<h2 id="写Splash脚本"><a href="#写Splash脚本" class="headerlink" title="写Splash脚本"></a>写Splash脚本</h2><p>启动完成后，主要通过<code>Chrome</code>和<code>8050</code>端口上的服务，来验证<strong>lua脚本</strong>的正确性。</p>
+<p>【举一个例子】我们想获取<code>600000浦发银行</code>在上交所公布的年报下载地址，但是披露页主要通过js进行渲染与切换，并且很难通过解析js脚本中的请求信息来获取真实的下载地址，让我们看看如何使用splash来操作页面并得到渲染后的页面吧~</p>
+<ol>
+<li><p>进入想要爬取的<a href="http://www.sse.com.cn/disclosure/listedinfo/announcement/index.shtml?productId=600000" target="_blank" rel="noopener">起始页面</a></p>
+</li>
+<li><p>对于<code>全部分类</code>，我们想选择<code>定期报告</code>，通过<code>Chrome</code>的开发者工具，找到选择框的按钮定义</p>
+<p><img src="/2019/07/02/splash-tut/btn1.jpg" alt="定期报告"></p>
+</li>
+</ol>
+<p>   选择该按钮并点击，js脚本如下：</p>
+   <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementsByClassName(<span class="string">"ms-drop ms-bottom"</span>)[<span class="number">1</span>].getElementsByTagName(<span class="string">"label"</span>)[<span class="number">1</span>].click()</span><br></pre></td></tr></table></figure>
+<p>   可以在<code>Console</code>运行脚本，直接得到点击后的结果：</p>
+<p>   <img src="/2019/07/02/splash-tut/btn2.jpg" alt="定期报告"></p>
+<ol>
+<li><p>同样的方式，找到并点击<code>查询</code>按钮：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementsByClassName(<span class="string">"btn btn-primary js_output_apphide"</span>)[<span class="number">0</span>].click()</span><br></pre></td></tr></table></figure>
+<p>此时可以看到，左侧已经是我们想要的页面，返回源码就可以进行解析：</p>
+<p><img src="/2019/07/02/splash-tut/btn3.jpg" alt="查询"></p>
+</li>
+</ol>
+<ol>
+<li><p>由于网站限制，只能选择最近三年的公告，我们希望时间窗口再往前推三年，需要对开始时间、结束时间分别选择。</p>
+</li>
+<li><p>处理开始时间：找到开始时间的窗口，时间往回推35个月，并选择第16日：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">"start_date"</span>).click()</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i=<span class="number">0</span>; i&lt;<span class="number">35</span>; i++)&#123;</span><br><span class="line">		<span class="built_in">document</span>.getElementsByClassName(<span class="string">"icon-arrow-left"</span>)[<span class="number">0</span>].click()</span><br><span class="line">&#125;</span><br><span class="line">a = <span class="built_in">document</span>.getElementsByClassName(<span class="string">"datetimepicker-days"</span>)[<span class="number">0</span>].getElementsByClassName(<span class="string">"day"</span>)</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i=<span class="number">0</span>; i&lt;a.length; i++)&#123;</span><br><span class="line">		<span class="keyword">if</span> (a[i].className == <span class="string">"day"</span> &amp;&amp; a[i].innerText == <span class="string">"16"</span>)&#123;</span><br><span class="line">				a[i].click()</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>处理结束时间：找到结束时间的窗口，时间往回推35个月，并选择第15日（满足时间窗口小于三年）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">"end_date"</span>).click()</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i=<span class="number">0</span>; i&lt;<span class="number">35</span>; i++)&#123;</span><br><span class="line">		<span class="built_in">document</span>.getElementsByClassName(<span class="string">"icon-arrow-left"</span>)[<span class="number">7</span>].click()</span><br><span class="line">&#125;</span><br><span class="line">a = <span class="built_in">document</span>.getElementsByClassName(<span class="string">"datetimepicker-days"</span>)[<span class="number">1</span>].getElementsByClassName(<span class="string">"day"</span>)</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i=<span class="number">0</span>; i&lt;a.length; i++)&#123;</span><br><span class="line">		<span class="keyword">if</span> (a[i].className == <span class="string">"day"</span> &amp;&amp; a[i].innerText == <span class="string">"15"</span>)&#123;</span><br><span class="line">				a[i].click()</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>再次提交后，我们可以得到新的时间窗口下返回的页面：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementsByClassName(<span class="string">"btn btn-primary js_output_apphide"</span>)[<span class="number">0</span>].click()</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/07/02/splash-tut/btn4.jp2" alt="更改时间窗口"></p>
+</li>
+<li><p>整合成<code>lua脚本</code>，在splash服务中进行验证。</p>
+<p>需要注意的是，</p>
+</li>
+</ol>
+<h2 id="使用scrapy-splash"><a href="#使用scrapy-splash" class="headerlink" title="使用scrapy-splash"></a>使用scrapy-splash</h2><h2 id="Docker基本命令"><a href="#Docker基本命令" class="headerlink" title="Docker基本命令"></a>Docker基本命令</h2><p>启动容器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -i -t &lt;image_name/continar_id&gt; /bin/bash</span><br></pre></td></tr></table></figure>
+<p>查看运行容器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ docker ps</span><br><span class="line">$ docker ps -a  </span><br><span class="line">$ docker ps | less -S</span><br></pre></td></tr></table></figure>
+<p>删除容器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker rm Name/ID</span><br></pre></td></tr></table></figure>
+<p>停止、启动、杀死、重启一个容器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ docker stop Name/ID  </span><br><span class="line">$ docker start Name/ID  </span><br><span class="line">$ docker <span class="built_in">kill</span> Name/ID  </span><br><span class="line">$ docker restart name/ID</span><br></pre></td></tr></table></figure>
+<p>查看容器日志：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker logs &lt;id/container_name&gt;</span><br></pre></td></tr></table></figure>
+<p>PS：每次<code>run</code>过一个镜像（image）后会生成一个容器（container），容器启动用<code>start</code>，如果再次使用<code>run</code>，则会生成多个重复的容器。</p>
+<p>PPS：在容器中运行jupyter时，会在日志中产生token，需要通过查看日志的命令获取。</p>
+
           
         
       
@@ -662,7 +852,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-02 21:56:24" itemprop="dateModified" datetime="2019-07-02T21:56:24+08:00">2019-07-02</time>
+                <time title="修改时间：2019-07-02 22:25:01" itemprop="dateModified" datetime="2019-07-02T22:25:01+08:00">2019-07-02</time>
               
             
           </span>
@@ -1585,7 +1775,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">3</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1614,7 +1808,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">6</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
