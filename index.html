@@ -607,7 +607,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-05 23:56:06" itemprop="dateModified" datetime="2019-07-05T23:56:06+08:00">2019-07-05</time>
+                <time title="修改时间：2019-07-05 23:58:19" itemprop="dateModified" datetime="2019-07-05T23:58:19+08:00">2019-07-05</time>
               
             
           </span>
@@ -686,19 +686,17 @@
 </ol>
 <p>为了避免和本机的<code>jupyterlab</code>冲突，建议修改本机的jupyterlab监听端口。</p>
 <h2 id="写Splash脚本"><a href="#写Splash脚本" class="headerlink" title="写Splash脚本"></a>写Splash脚本</h2><p>启动完成后，主要通过<code>Chrome</code>和<code>8050</code>端口上的服务，来验证<strong>lua脚本</strong>的正确性。</p>
-<p>【举一个例子】我们想获取<code>600000浦发银行</code>在上交所公布的年报下载地址，但是披露页主要通过js进行渲染与切换，并且很难通过解析js脚本中的请求信息来获取真实的下载地址，让我们看看如何使用splash来操作页面并得到渲染后的页面吧~</p>
+<p>【举一个例子】我们想获取<code>600000浦发银行</code>在上交所公布的年报下载地址，但是披露页主要通过js进行渲染与切换，并且很难通过解析js脚本中的请求信息来获取真实的下载地址。让我们看看如何使用splash来操作页面并得到渲染后的页面吧~</p>
 <ol>
 <li><p>进入想要爬取的<a href="http://www.sse.com.cn/disclosure/listedinfo/announcement/index.shtml?productId=600000" target="_blank" rel="noopener">起始页面</a></p>
 </li>
-<li><p>对于<code>全部分类</code>，我们想选择<code>定期报告</code>，通过<code>Chrome</code>的开发者工具，找到选择框的按钮定义</p>
+<li><p>对于<code>全部分类</code>，我们想选择<code>定期报告</code>，通过<code>Chrome</code>的开发者工具，找到选择框的按钮定义：</p>
 <p><img src="/2019/07/02/splash-tut/btn1.jpg" alt="定期报告"></p>
+<p>选择该按钮并点击，js脚本如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementsByClassName(<span class="string">"ms-drop ms-bottom"</span>)[<span class="number">1</span>].getElementsByTagName(<span class="string">"label"</span>)[<span class="number">1</span>].click()</span><br></pre></td></tr></table></figure>
+<p>可以在<code>Console</code>运行脚本，直接得到点击后的结果：</p>
+<p><img src="/2019/07/02/splash-tut/btn2.jpg" alt="定期报告"></p>
 </li>
-</ol>
-<p>   选择该按钮并点击，js脚本如下：</p>
-   <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementsByClassName(<span class="string">"ms-drop ms-bottom"</span>)[<span class="number">1</span>].getElementsByTagName(<span class="string">"label"</span>)[<span class="number">1</span>].click()</span><br></pre></td></tr></table></figure>
-<p>   可以在<code>Console</code>运行脚本，直接得到点击后的结果：</p>
-<p>   <img src="/2019/07/02/splash-tut/btn2.jpg" alt="定期报告"></p>
-<ol>
 <li><p>同样的方式，找到并点击<code>查询</code>按钮：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementsByClassName(<span class="string">"btn btn-primary js_output_apphide"</span>)[<span class="number">0</span>].click()</span><br></pre></td></tr></table></figure>
 <p>此时可以看到，左侧已经是我们想要的页面，返回源码就可以进行解析：</p>
