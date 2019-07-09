@@ -96,21 +96,21 @@
 
 
 
-  <meta name="description" content="本篇主要基于第一个小例子，略作修改，增加下载文件的功能。 官方文档已经对下载文件/图片的方法做了完整的说明。  修改setting第一步，需要修改setting.py文件，指定一些下载文件需要说明的内容： 123456789101112# 下载文件存放位置FILES_STORE = &apos;../downloads&apos;# items中用于存储下载链接的字段名FILES_URLS_FIELD = &apos;pdf">
+  <meta name="description" content="本篇主要基于第一个小例子，略作修改，增加下载文件的功能。 官方文档已经对下载文件/图片的方法做了完整的说明。">
 <meta name="keywords" content="Python,Scrapy">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Scrapy教程（3）：如何下载文件">
 <meta property="og:url" content="https://www.union-capital.cn/2019/07/10/scrapy-tut-3-download/index.html">
 <meta property="og:site_name" content="Sturm und Drang">
-<meta property="og:description" content="本篇主要基于第一个小例子，略作修改，增加下载文件的功能。 官方文档已经对下载文件/图片的方法做了完整的说明。  修改setting第一步，需要修改setting.py文件，指定一些下载文件需要说明的内容： 123456789101112# 下载文件存放位置FILES_STORE = &apos;../downloads&apos;# items中用于存储下载链接的字段名FILES_URLS_FIELD = &apos;pdf">
+<meta property="og:description" content="本篇主要基于第一个小例子，略作修改，增加下载文件的功能。 官方文档已经对下载文件/图片的方法做了完整的说明。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://www.union-capital.cn/2019/07/10/scrapy-tut-3-download/file_1.png">
 <meta property="og:image" content="https://www.union-capital.cn/2019/07/10/scrapy-tut-3-download/file_2.png">
 <meta property="og:image" content="https://www.union-capital.cn/2019/07/10/scrapy-tut-3-download/db.png">
-<meta property="og:updated_time" content="2019-07-09T17:01:41.135Z">
+<meta property="og:updated_time" content="2019-07-09T17:03:35.697Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Scrapy教程（3）：如何下载文件">
-<meta name="twitter:description" content="本篇主要基于第一个小例子，略作修改，增加下载文件的功能。 官方文档已经对下载文件/图片的方法做了完整的说明。  修改setting第一步，需要修改setting.py文件，指定一些下载文件需要说明的内容： 123456789101112# 下载文件存放位置FILES_STORE = &apos;../downloads&apos;# items中用于存储下载链接的字段名FILES_URLS_FIELD = &apos;pdf">
+<meta name="twitter:description" content="本篇主要基于第一个小例子，略作修改，增加下载文件的功能。 官方文档已经对下载文件/图片的方法做了完整的说明。">
 <meta name="twitter:image" content="https://www.union-capital.cn/2019/07/10/scrapy-tut-3-download/file_1.png">
 
 
@@ -375,7 +375,7 @@
                 
               
 
-              <time title="创建时间：2019-07-10 00:26:15 / 修改时间：01:01:41" itemprop="dateCreated datePublished" datetime="2019-07-10T00:26:15+08:00">2019-07-10</time>
+              <time title="创建时间：2019-07-10 00:26:15 / 修改时间：01:03:35" itemprop="dateCreated datePublished" datetime="2019-07-10T00:26:15+08:00">2019-07-10</time>
             
 
             
@@ -436,6 +436,7 @@
 <p>本篇主要基于<a href="/2019/07/08/scrapy-tut-1/" title="第一个小例子">第一个小例子</a>，略作修改，增加下载文件的功能。</p>
 <p>官方文档已经对<a href="https://docs.scrapy.org/en/latest/topics/media-pipeline.html#" target="_blank" rel="noopener">下载文件/图片</a>的方法做了完整的说明。</p>
 </blockquote>
+<a id="more"></a>
 <h2 id="修改setting"><a href="#修改setting" class="headerlink" title="修改setting"></a>修改setting</h2><p>第一步，需要修改<code>setting.py</code>文件，指定一些下载文件需要说明的内容：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载文件存放位置</span></span><br><span class="line">FILES_STORE = <span class="string">'../downloads'</span></span><br><span class="line"><span class="comment"># items中用于存储下载链接的字段名</span></span><br><span class="line">FILES_URLS_FIELD = <span class="string">'pdf_url'</span></span><br><span class="line"><span class="comment"># 保留120天下载缓存</span></span><br><span class="line">FILES_EXPIRES = 120</span><br><span class="line"><span class="comment"># 下载延迟</span></span><br><span class="line">DOWNLOAD_DELAY = 5</span><br><span class="line">DOWNLOAD_TIMEOUT = 180</span><br><span class="line"><span class="comment"># 同时请求的requests数量</span></span><br><span class="line">CONCURRENT_REQUESTS_PER_DOMAIN = 2</span><br><span class="line">CONCURRENT_REQUESTS_PER_IP = 2</span><br></pre></td></tr></table></figure>
 <p><code>FILES_STORE</code>：指定下载文件的根目录，此处我们设置为爬虫项目文件夹同层的downloads文件夹。</p>

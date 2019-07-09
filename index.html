@@ -369,7 +369,7 @@
                 
               
 
-              <time title="创建时间：2019-07-10 00:26:15 / 修改时间：01:01:41" itemprop="dateCreated datePublished" datetime="2019-07-10T00:26:15+08:00">2019-07-10</time>
+              <time title="创建时间：2019-07-10 00:26:15 / 修改时间：01:03:35" itemprop="dateCreated datePublished" datetime="2019-07-10T00:26:15+08:00">2019-07-10</time>
             
 
             
@@ -427,37 +427,19 @@
 
       
         
-          
-            <blockquote>
+          <blockquote>
 <p>本篇主要基于<a href="/2019/07/08/scrapy-tut-1/" title="第一个小例子">第一个小例子</a>，略作修改，增加下载文件的功能。</p>
 <p>官方文档已经对<a href="https://docs.scrapy.org/en/latest/topics/media-pipeline.html#" target="_blank" rel="noopener">下载文件/图片</a>的方法做了完整的说明。</p>
 </blockquote>
-<h2 id="修改setting"><a href="#修改setting" class="headerlink" title="修改setting"></a>修改setting</h2><p>第一步，需要修改<code>setting.py</code>文件，指定一些下载文件需要说明的内容：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载文件存放位置</span></span><br><span class="line">FILES_STORE = <span class="string">'../downloads'</span></span><br><span class="line"><span class="comment"># items中用于存储下载链接的字段名</span></span><br><span class="line">FILES_URLS_FIELD = <span class="string">'pdf_url'</span></span><br><span class="line"><span class="comment"># 保留120天下载缓存</span></span><br><span class="line">FILES_EXPIRES = 120</span><br><span class="line"><span class="comment"># 下载延迟</span></span><br><span class="line">DOWNLOAD_DELAY = 5</span><br><span class="line">DOWNLOAD_TIMEOUT = 180</span><br><span class="line"><span class="comment"># 同时请求的requests数量</span></span><br><span class="line">CONCURRENT_REQUESTS_PER_DOMAIN = 2</span><br><span class="line">CONCURRENT_REQUESTS_PER_IP = 2</span><br></pre></td></tr></table></figure>
-<p><code>FILES_STORE</code>：指定下载文件的根目录，此处我们设置为爬虫项目文件夹同层的downloads文件夹。</p>
-<p><code>FILES_URLS_FIELD</code>：指定item中用于下载文件的url，我们将pdf链接地址保存在<code>pdf_url</code>字段中。</p>
-<p><code>FILES_EXPIRES</code>：下载文件缓存，120天内下载过的链接，使用缓存而不是重新下载，减轻服务器压力。</p>
-<p><code>DOWNLOAD_DELAY</code>、<code>DOWNLOAD_TIMEOUT</code>：下载延迟设置</p>
-<p><code>CONCURRENT_REQUESTS_PER_DOMAIN</code>、<code>CONCURRENT_REQUESTS_PER_IP</code>：限制domain/ip同时请求的数量，防止被ban。</p>
-<h2 id="修改Item定义"><a href="#修改Item定义" class="headerlink" title="修改Item定义"></a>修改Item定义</h2><p>需要新增一个字段，用于保存下载的内容信息。根据官方文档规定，默认保存下载文件信息的字段名为<code>files</code>，修改后的item定义如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SsedisclosureItemYearReport</span><span class="params">(scrapy.Item)</span>:</span></span><br><span class="line">    pdf_title = scrapy.Field()</span><br><span class="line">    pdf_fulltitle = scrapy.Field()</span><br><span class="line">    pdf_date = scrapy.Field()</span><br><span class="line">    pdf_url = scrapy.Field() <span class="comment"># 存放下载链接</span></span><br><span class="line">    files = scrapy.Field() <span class="comment"># 存放文件内容</span></span><br></pre></td></tr></table></figure>
-<h2 id="新增下载文件pipeline"><a href="#新增下载文件pipeline" class="headerlink" title="新增下载文件pipeline"></a>新增下载文件pipeline</h2><p>我们既可以默认使用自带的文件管道类<code>FilesPipeline</code>，也可以通过继承父类来生成自己的管道。</p>
-<p>如果使用默认类和方法，只需要在setting中开启<code>scrapy.pipelines.files.FilesPipeline&#39;</code>管道就可以了，但是无法设置下载文件的文件名，系统会默认使用下载链接的SHA1哈希码作为文件名（就是一串乱码）。</p>
-<p>我们想自定义文件名和子目录，继承父类后复写以下两个方法：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SsedisclosureFilesPipeline</span><span class="params">(FilesPipeline)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_media_requests</span><span class="params">(self, item, info)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> isinstance(item, SsedisclosureItemYearReport):</span><br><span class="line">            <span class="keyword">yield</span> Request(item.get(self.files_urls_field, []), meta=item)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">file_path</span><span class="params">(self, request, response=None, info=None)</span>:</span></span><br><span class="line">        stockid = request.meta[<span class="string">'pdf_fulltitle'</span>].split(<span class="string">':'</span>)[<span class="number">0</span>]</span><br><span class="line">        name = request.meta[<span class="string">'pdf_url'</span>].split(<span class="string">'/'</span>)[<span class="number">-1</span>]</span><br><span class="line">        dt = request.meta[<span class="string">'pdf_date'</span>]</span><br><span class="line">        <span class="keyword">return</span> <span class="string">'/regular-report/%s/%s-%s'</span> % (stockid, dt, name)</span><br></pre></td></tr></table></figure>
-<p><code>get_media_requests</code>：用于生成下载文件的链接，当items比较多时，我们只需要判断item是否是我们需要下载的那个，然后取出<code>files_urls_field</code>字段，这个默认值在setting中设定。此外，由于我们需要根据item的内容设定文件名，所以通过meta把item传递下去。</p>
-<p><code>file_path</code>：生成我们想要的子目录和文件名，此处我们在下载文件夹中增加<code>regular-report</code>和股票代码子文件夹，最后用<code>公告日期-文件名</code>的形式存储pdf。</p>
-<h2 id="修改pipeline顺序"><a href="#修改pipeline顺序" class="headerlink" title="修改pipeline顺序"></a>修改pipeline顺序</h2><p>最后，修改setting中pipeline的顺序，让item排队通过：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ITEM_PIPELINES = &#123;</span><br><span class="line">    <span class="string">'sseDisclosure.pipelines.DuplicatesPipeline'</span>: <span class="number">250</span>,</span><br><span class="line">    <span class="string">'sseDisclosure.pipelines.SsedisclosureFilesPipeline'</span>: <span class="number">280</span>, <span class="comment"># 使用自定义的文件下载管道</span></span><br><span class="line">    <span class="comment"># 'scrapy.pipelines.files.FilesPipeline': 1 # 使用默认的文件下载管道</span></span><br><span class="line">    <span class="string">'sseDisclosure.pipelines.SsedisclosurePipeline'</span>: <span class="number">300</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们设定的顺序是：去重 - 下载pdf文件 - 其他信息存入数据库。</p>
-<p>如果不自己编写<code>FilesPipeline</code>，可以直接使用scrapy自带的文件下载管道<code>scrapy.pipelines.files.FilesPipeline</code>，开启就行了。</p>
-<h2 id="测试下载爬虫"><a href="#测试下载爬虫" class="headerlink" title="测试下载爬虫"></a>测试下载爬虫</h2><p>最后测试一下下载效果：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scrapy crawl sse-report</span><br></pre></td></tr></table></figure>
-<p><img src="/2019/07/10/scrapy-tut-3-download/file_1.png" alt="下载文件"></p>
-<p><img src="/2019/07/10/scrapy-tut-3-download/file_2.png" alt="下载文件"></p>
-<p><img src="/2019/07/10/scrapy-tut-3-download/db.png" alt="下载文件"></p>
-
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/07/10/scrapy-tut-3-download/" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -557,12 +539,24 @@
                 
               
 
-              <time title="创建时间：2019-07-09 23:27:11 / 修改时间：23:32:03" itemprop="dateCreated datePublished" datetime="2019-07-09T23:27:11+08:00">2019-07-09</time>
+              <time title="创建时间：2019-07-09 23:27:11" itemprop="dateCreated datePublished" datetime="2019-07-09T23:27:11+08:00">2019-07-09</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-10 01:03:25" itemprop="dateModified" datetime="2019-07-10T01:03:25+08:00">2019-07-10</time>
               
             
           </span>
@@ -615,19 +609,19 @@
 
       
         
-          
-            <blockquote>
+          <blockquote>
 <p>由于scrapy爬虫是在终端下运行的，直接在py文件中设置断点无法调试。</p>
+<p>记录一些调试方法。</p>
 </blockquote>
-<h2 id="调试爬虫"><a href="#调试爬虫" class="headerlink" title="调试爬虫"></a>调试爬虫</h2><h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><p>在spider中添加以下代码：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 命令行调试代码</span></span><br><span class="line"><span class="keyword">from</span> scrapy.shell <span class="keyword">import</span> inspect_response</span><br><span class="line">inspect_response(response, self)</span><br></pre></td></tr></table></figure>
-<p>然后命令行运行<code>scrapy crawl 爬虫名</code>即可进入shell调试状态。</p>
-<h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><p>在爬虫项目主目录下新建<code>run.py</code>文件：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">from</span> scrapy <span class="keyword">import</span> cmdline</span><br><span class="line"></span><br><span class="line">name = <span class="string">'sse-report'</span></span><br><span class="line">cmd = <span class="string">'scrapy crawl &#123;0&#125;'</span>.format(name)</span><br><span class="line">cmdline.execute(cmd.split())</span><br></pre></td></tr></table></figure>
-<p>然后在爬虫的任意位置设置断点，运行<code>run.py</code>，即可在断点处跟踪。</p>
-<p>建议结合vscode的debug功能使用，倍儿爽！</p>
-
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/07/09/scrapy-tut-2-debug/" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
