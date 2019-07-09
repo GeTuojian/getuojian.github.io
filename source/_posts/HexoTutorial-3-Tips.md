@@ -112,3 +112,10 @@ npm install https://github.com/CodeFalling/hexo-asset-image --save
 
 使用`hexo n "xxx"`生成新文章，会在`source`目录下同时生成`xxx.md`文件及**同名文件夹**，将图片放在文件夹中，并使用markdown语法在文章中引用即可，引用路径为`xxx/abc.img`。
 
+## 链接本地文章
+
+直接在md文件中写`[链接这篇文章](doc.md)`是无法正确链接到静态文件的，需要写成：
+
+```markdown
+{% post_link doc 显示文字%}
+```
