@@ -106,7 +106,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://www.union-capital.cn/2019/07/08/scrapy-tut/scrapy_architecture.png">
 <meta property="og:image" content="https://www.union-capital.cn/2019/07/08/scrapy-tut/SSE_sample.png">
-<meta property="og:updated_time" content="2019-07-08T16:49:40.514Z">
+<meta property="og:updated_time" content="2019-07-09T14:09:48.373Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Scrapy教程">
 <meta name="twitter:description" content="本文以一个简单的爬虫小例子为引子，整理一下使用scrapy编写爬虫、下载文件、渲染js页面等常规操作。 目标：爬取上交所公告页面中的所有上市公司定期报告（包括一季报、中报、三季报、年报及摘要）。 这是完整版文档。">
@@ -391,7 +391,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-09 00:49:40" itemprop="dateModified" datetime="2019-07-09T00:49:40+08:00">2019-07-09</time>
+                <time title="修改时间：2019-07-09 22:09:48" itemprop="dateModified" datetime="2019-07-09T22:09:48+08:00">2019-07-09</time>
               
             
           </span>
@@ -510,7 +510,9 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> scrapy</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SsedisclosureItemYearReport</span><span class="params">(scrapy.Item)</span>:</span></span><br><span class="line">    pdf_title = scrapy.Field()</span><br><span class="line">    pdf_fulltitle = scrapy.Field()</span><br><span class="line">    pdf_date = scrapy.Field()</span><br><span class="line">    pdf_url = scrapy.Field()</span><br></pre></td></tr></table></figure>
 <p>这里我们想要存储<strong>公告名字</strong>（源码中有两个来源，显示的文本与定义tag的属性）、<strong>公告日期</strong>、<strong>文件地址</strong>。</p>
 <h2 id="编写Spider"><a href="#编写Spider" class="headerlink" title="编写Spider"></a>编写Spider</h2><p>进入<code>spiders</code>目录下，新建一个文件<code>ssedis.py</code>（名字任意）。</p>
-<p>由于我们想要爬取的页面是需要进行js渲染的，很难通过直接解析request的真实内容进行爬取。这里我们采用<code>scrapy_splash</code>包，结合<code>splash</code>服务使用，关于splash的使用详见<a href="splash-tut.md">此篇文章</a>。</p>
+<p>由于我们想要爬取的页面是需要进行js渲染的，很难通过直接解析request的真实内容进行爬取。</p>
+<p>这里我们采用<code>scrapy_splash</code>包，结合<code>splash</code>服务使用，关于splash的使用详见<a href="splash-tut.md">此篇文章</a>。</p>
+<a href="/2019/07/02/splash-tut/" title="此篇文章">此篇文章</a>
 <p>首先import必要的包：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> scrapy</span><br><span class="line"><span class="keyword">from</span> scrapy_splash <span class="keyword">import</span> SplashRequest</span><br><span class="line"><span class="keyword">from</span> sseDisclosure.items <span class="keyword">import</span> SsedisclosureItemYearReport</span><br></pre></td></tr></table></figure>
 <p>第三行是我们刚刚写好的<code>item类</code>。</p>
