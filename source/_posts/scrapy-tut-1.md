@@ -5,7 +5,7 @@ tags:
 - Python
 - Scrapy
 categories:
-- Scrapy教程
+- 爬虫教程
 ---
 
 > 本文以一个简单的爬虫小例子为引子，整理一下使用scrapy编写爬虫、下载文件、渲染js页面等常规操作。
@@ -24,7 +24,7 @@ $ pip install scrapy
 
 ## Scrapy架构图
 
-![Scrapy架构](scrapy-tut/scrapy_architecture.png)
+![Scrapy架构](scrapy-tut-1/scrapy_architecture.png)
 
 1. Engine从Spiders获得需要爬取的Requests
 2. Engine在Scheduler中给Requests排队
@@ -102,7 +102,7 @@ HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 简单地看下要爬取的[页面](http://www.sse.com.cn/disclosure/listedinfo/announcement/index.shtml?productId=600000)，选择`定期公告`，点击查询：
 
-![样例页面](scrapy-tut/SSE_sample.png)
+![样例页面](scrapy-tut-1/SSE_sample.png)
 
 我们想要**存储信息**并**下载pdf**。
 
@@ -237,10 +237,9 @@ class SsedisSpider(scrapy.Spider):
 
 1. start_requests函数中使用了SplashRequest，替代了默认的Request函数，是为了使用js渲染服务（关于SplashRequest的特殊用法可以查看[github源码说明](https://github.com/scrapy-plugins/scrapy-splash)）。
    简单地说，设置endpoint为`execute`，是为了让渲染服务执行自定义js脚本，从而完成模拟点击的行为，需要在args中指明`lua脚本`对应的内容。
-   
 2. list_pdf是我们编写的item类的一个实例。scrapy（确切地说是SplashRequest）返回的response可以直接调用xpath方法抽取内容，其他的抽取方法（如CSS）可以看官方的说明文档。从response中抽取内容填入对应字段，产生迭代对象即可。
 
-   **建议按单条记录生成item**，便于后续在pipeline进行去重操作。
+**建议按单条记录生成item**，便于后续在pipeline进行去重操作。
 
 ## 编写pipelines.py
 
@@ -345,7 +344,7 @@ $ scrapy crawl sse-report
 
 查看数据库中的结果：
 
-![爬取结果](scrapy-tut/ret.png)
+![爬取结果](scrapy-tut-1/ret.png)
 
 下一篇将介绍如何下载文件。
 
