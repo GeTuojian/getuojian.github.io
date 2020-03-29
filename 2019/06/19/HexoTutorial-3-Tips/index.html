@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Sturm und Drang">
 <meta property="og:description" content="保留CNAME文件如果GitHub Pages配置了自定义的域名，则会在Repository下生成一个CNAME的文件，里面包含了配置好的自定义域名。 为了避免每次更新blog时，将CNAME文件删除，需要在blog_name/source文件夹下新建一个包含相同内容的CNAME文件，然后hexo g、hexo d进行同步。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-07-09T14:28:39.924Z">
+<meta property="og:updated_time" content="2020-03-29T07:25:45.470Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hexo基础教程（3）：使用小Tips">
 <meta name="twitter:description" content="保留CNAME文件如果GitHub Pages配置了自定义的域名，则会在Repository下生成一个CNAME的文件，里面包含了配置好的自定义域名。 为了避免每次更新blog时，将CNAME文件删除，需要在blog_name/source文件夹下新建一个包含相同内容的CNAME文件，然后hexo g、hexo d进行同步。">
@@ -388,7 +388,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-09 22:28:39" itemprop="dateModified" datetime="2019-07-09T22:28:39+08:00">2019-07-09</time>
+                <time title="修改时间：2020-03-29 15:25:45" itemprop="dateModified" datetime="2020-03-29T15:25:45+08:00">2020-03-29</time>
               
             
           </span>
@@ -471,6 +471,9 @@
 <p>使用<code>hexo n &quot;xxx&quot;</code>生成新文章，会在<code>source</code>目录下同时生成<code>xxx.md</code>文件及<strong>同名文件夹</strong>，将图片放在文件夹中，并使用markdown语法在文章中引用即可，引用路径为<code>xxx/abc.img</code>。</p>
 <h2 id="链接本地文章"><a href="#链接本地文章" class="headerlink" title="链接本地文章"></a>链接本地文章</h2><p>直接在md文件中写<code>[链接这篇文章](doc.md)</code>是无法正确链接到静态文件的，需要写成：</p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% post_link doc 显示文字%&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="链接文件资源"><a href="#链接文件资源" class="headerlink" title="链接文件资源"></a>链接文件资源</h2><p>想在文档里插入文件附件，并上传至github做备份，使用插入图片的方式插入附件，似乎有问题。根据<a href="https://hexo.io/zh-cn/docs/asset-folders.html" target="_blank" rel="noopener">官方文档的描述</a>，需写成如下形式：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% asset_link test.txt 下载地址 %&#125;</span><br></pre></td></tr></table></figure>
+
       
     </div>
 
@@ -702,7 +705,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#保留CNAME文件"><span class="nav-number">1.</span> <span class="nav-text">保留CNAME文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#保留README-md文件"><span class="nav-number">2.</span> <span class="nav-text">保留README.md文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#管理Hexo源文件"><span class="nav-number">3.</span> <span class="nav-text">管理Hexo源文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启用mathjax"><span class="nav-number">4.</span> <span class="nav-text">启用mathjax</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用本地图片"><span class="nav-number">5.</span> <span class="nav-text">引用本地图片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链接本地文章"><span class="nav-number">6.</span> <span class="nav-text">链接本地文章</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#保留CNAME文件"><span class="nav-number">1.</span> <span class="nav-text">保留CNAME文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#保留README-md文件"><span class="nav-number">2.</span> <span class="nav-text">保留README.md文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#管理Hexo源文件"><span class="nav-number">3.</span> <span class="nav-text">管理Hexo源文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启用mathjax"><span class="nav-number">4.</span> <span class="nav-text">启用mathjax</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用本地图片"><span class="nav-number">5.</span> <span class="nav-text">引用本地图片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链接本地文章"><span class="nav-number">6.</span> <span class="nav-text">链接本地文章</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链接文件资源"><span class="nav-number">7.</span> <span class="nav-text">链接文件资源</span></a></li></ol></div>
             
 
           </div>
