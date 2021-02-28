@@ -119,3 +119,12 @@ npm install https://github.com/CodeFalling/hexo-asset-image --save
 ```markdown
 {% post_link doc 显示文字%}
 ```
+
+## 链接文件资源
+
+想在文档里插入文件附件，并上传至github做备份，使用插入图片的方式插入附件，似乎有问题。根据[官方文档的描述](https://hexo.io/zh-cn/docs/asset-folders.html)，需写成如下形式：
+
+```markdown
+{% asset_link test.txt 下载地址 %}
+```
+
