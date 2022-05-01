@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="利用Charles抓包微信小程序的数据交互接口，分析调用接口所需的字段。 通过小程序反编译，拿到页面的处理逻辑，并尝试复现api接口的关键参数。">
+<meta name="keywords" content="爬虫,大众点评,微信小程序,Charles">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大众点评微信小程序端api探索（1）">
+<meta property="og:url" content="https://www.union-capital.cn/2022/04/20/dianping-wxmp-api-spider-1/index.html">
+<meta property="og:site_name" content="Sturm und Drang">
+<meta property="og:description" content="利用Charles抓包微信小程序的数据交互接口，分析调用接口所需的字段。 通过小程序反编译，拿到页面的处理逻辑，并尝试复现api接口的关键参数。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://www.union-capital.cn/2022/04/20/dianping-wxmp-api-spider-1/dpSpider.png">
+<meta property="og:image" content="https://www.union-capital.cn/2022/04/20/dianping-wxmp-api-spider-1/dpwxmapp.png">
+<meta property="og:image" content="https://www.union-capital.cn/2022/04/20/dianping-wxmp-api-spider-1/url_cmp.png">
+<meta property="og:image" content="https://www.union-capital.cn/2022/04/20/dianping-wxmp-api-spider-1/mtsiReferrer_cmp.png">
+<meta property="og:image" content="https://www.union-capital.cn/2022/04/20/dianping-wxmp-api-spider-1/header.png">
+<meta property="og:image" content="https://www.union-capital.cn/2022/04/20/dianping-wxmp-api-spider-1/mtgsig.png">
+<meta property="og:image" content="https://www.union-capital.cn/2022/04/20/dianping-wxmp-api-spider-1/编译路径.png">
+<meta property="og:image" content="https://www.union-capital.cn/2022/04/20/dianping-wxmp-api-spider-1/jsapi.png">
+<meta property="og:updated_time" content="2022-05-01T14:46:06.980Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="大众点评微信小程序端api探索（1）">
+<meta name="twitter:description" content="利用Charles抓包微信小程序的数据交互接口，分析调用接口所需的字段。 通过小程序反编译，拿到页面的处理逻辑，并尝试复现api接口的关键参数。">
+<meta name="twitter:image" content="https://www.union-capital.cn/2022/04/20/dianping-wxmp-api-spider-1/dpSpider.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://www.union-capital.cn/2022/04/20/dianping-wxmp-api-spider-1/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>大众点评微信小程序端api探索（1） | Sturm und Drang</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sturm und Drang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">三天三夜，三更半夜</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.union-capital.cn/2022/04/20/dianping-wxmp-api-spider-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ge Tuojian">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sturm und Drang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">大众点评微信小程序端api探索（1）
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2022-04-20 00:00:00" itemprop="dateCreated datePublished" datetime="2022-04-20T00:00:00+08:00">2022-04-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2022-05-01 22:46:06" itemprop="dateModified" datetime="2022-05-01T22:46:06+08:00">2022-05-01</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/爬虫教程/" itemprop="url" rel="index"><span itemprop="name">爬虫教程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>利用Charles抓包微信小程序的数据交互接口，分析调用接口所需的字段。</p>
+<p>通过小程序反编译，拿到页面的处理逻辑，并尝试复现api接口的关键参数。</p>
+</blockquote>
+<a id="more"></a>
+<h3 id="能够获取点评商户列表的入口分析"><a href="#能够获取点评商户列表的入口分析" class="headerlink" title="能够获取点评商户列表的入口分析"></a>能够获取点评商户列表的入口分析</h3><p>目前潜在可以获取数据的四种途径：电脑Web、手机Web、官方App、微信小程序，本次主要分析微信小程序入口。</p>
+<p><img src="/2022/04/20/dianping-wxmp-api-spider-1/dpSpider.png" alt="dpSpider" title="点评爬虫思维导图"></p>
+<h3 id="前置准备"><a href="#前置准备" class="headerlink" title="前置准备"></a>前置准备</h3><p>安装<a href="https://www.charlesproxy.com/" title="Charles" target="_blank" rel="noopener">Charles</a>，配置SSL代理，确保能接受到手机端的请求包，可<a href="https://juejin.cn/post/6878113131990630413" target="_blank" rel="noopener">参考文章1</a>、<a href="http://zhaoxincheng.com/index.php/2021/03/14/ios%E7%B3%BB%E7%BB%9F%E6%8A%93%E5%8C%85%E5%85%A5%E9%97%A8%E5%AE%9E%E8%B7%B5%E4%B9%8B%E7%9F%AD%E9%93%BE/" target="_blank" rel="noopener">参考文章2</a>。</p>
+<h3 id="抓包分析"><a href="#抓包分析" class="headerlink" title="抓包分析"></a>抓包分析</h3><p>打开手机Http代理、打开Charles，进入大众点评小程序的美食列表页面，会发现一个关键字为<strong><code>wxmapi</code></strong>的请求。</p>
+<p>在小程序中，进一步筛选<strong><code>全部浦东新区-面包甜点-人气优先</code></strong>，可以捕捉到一个新的请求，不断下拉列表会产生新的请求。</p>
+<p><img src="/2022/04/20/dianping-wxmp-api-spider-1/dpwxmapp.png" alt="mtsiReferrer_cmp" style="zoom:25%;"></p>
+<p>接口的请求形式是<code>GET</code>，需要分别解析<strong>URL</strong>中的关键字段及<strong>请求头</strong>中的信息。</p>
+<h4 id="URL分析"><a href="#URL分析" class="headerlink" title="URL分析"></a>URL分析</h4><p><strong><code>全部浦东新区-面包甜点-人气优先</code></strong>的请求URL如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://m.dianping.com/wxmapi/search?optimus_uuid=17ff3533648c8-368bd0eeacae20-0-0-17ff3533648c8&amp;optimus_platform=13&amp;optimus_partner=203&amp;optimus_risk_level=71&amp;optimus_code=10&amp;_=1649241517616&amp;cookieId=pYXXCec7thu1_ppvwZAt4B6pU3oxTU6jYrd0iCmooyA&amp;dpid=pYXXCec7thu1_ppvwZAt4B6pU3oxTU6jYrd0iCmooyA&amp;token=&amp;cityId=1&amp;locateCityid=1&amp;filterCategory=%5B10%5D&amp;categoryId=117&amp;sortId=2&amp;myLat=31.255701065063477&amp;myLng=121.67395782470703&amp;start=10&amp;limit=10&amp;mtsiReferrer=%252Fpages%252Flist%252Flist%253F_%253D1649241517616%2526cookieId%253DpYXXCec7thu1_ppvwZAt4B6pU3oxTU6jYrd0iCmooyA%2526dpid%253DpYXXCec7thu1_ppvwZAt4B6pU3oxTU6jYrd0iCmooyA%2526token%253D%2526cityId%253D1%2526locateCityid%253D1%2526filterCategory%253D10%2526categoryId%253D10%2526sortId%253D0%2526range%253D-1%2526lat%253D31.255701065063477%2526lng%253D121.67395782470703%2526myLat%253D31.255701065063477%2526myLng%253D121.67395782470703%2526start%253D0%2526limit%253D10&amp;regionId=5&amp;parentRegionId=5&amp;parentCategoryId=10&amp;device_system=IOS&amp;wxmp_version=9.4.0&amp;_token=eJxNjMeOo2AQhN%2BFK5bgJ%2BMbySRjsDFxtAcyJppkG1b77uuZHa1GavVXVd2q39CoptAe3UHzBO0BRbAYAUiURglyByX%2FMwpgDM2yYAfFoytC%2Bw%2BcJncUYH99Bpe3%2F6BJdAcwnPm1%2ByEx4j2fP%2Br7BbpHSR0V2YRMWTQmJXL%2FMnnfp0kZdV3W%2FNTQDvp3L%2Fs2%2B1rQu6i9voverL8ZfXP%2B5nQrOmgPZdrqOsxsPjfujPBZDc%2BxXjGXRdxITuJVWypV6xak54OmnQwJ3FY8OCL%2BPKGoOr50RX%2FGy2bCVhgrmm1P%2BsYnQL0W5045eW6J0vHmOZVwkXu3og7DKaQGW5DIh1L2AR%2FBx8TVAxDm25rCy2q0%2BNJaMLLA%2BVLFMTfwA4rfqRs%2FR0OZ8o8uCAUf0FlvZD1xc2OgtOsrtb1c8En%2BcRmc5mlXfp3Rl1zo%2BynnTdwRj25xdGu6L6OaSkxlanKTLgDmSHgIG5YpMTNAe9%2BWFkcwmNfrxHS9FmDi4cZadBWQwlQh5qHqE4tQiamjvFkyk7kiGyNWXEyS1TvaokJt5samV5lNPJ%2FXTelkV3idjsHlSjTGSgdqmW5tUU8GtzSBbwFrZRwESygftMgpVL3GXm%2BaUCHrINXag9VVD2PkJlpGxRGTtKVx7soa9hrQDy8wZG%2BkbVE7YpHrkQE76rJfPNZiAD7jStd4uj9f3YSPcHh9wd4ictFAcf3QMdemP5sHWVawF4vlxdEPxC7VqrOi1TljPULnpqPjouJeV0kdYMQhTArcK52VbLHzmuecnPmX%2Bx368xd2rvkr</span><br></pre></td></tr></table></figure>
+<p>为了方便猜测各个参数的含义，同时获取<strong><code>海淀区-五道口-小吃快餐-口味最佳</code></strong>的URL，将两组URL参数横向对比如下：</p>
+<p><img src="/2022/04/20/dianping-wxmp-api-spider-1/url_cmp.png" alt="url_cmp" style="zoom:50%;"></p>
+<p>其中<code>白色部分</code>是固定不变或可有可无的参数，<code>蓝色部分</code>是根据品类、区域、排序不同而发生变化的参数，<code>黄色部分</code>是含义不明、但必须有的参数。</p>
+<p><strong>_</strong>参数：看位数可能是以毫秒计的timestamp，记录了请求时间，尝试转换：</p>
+<ul>
+<li>1649241517616 = 2022-04-06 18:38:37</li>
+<li>1649262970040 = 2022-04-07 00:36:10</li>
+</ul>
+<p>​    与实际访问时间相近</p>
+<p><strong>token</strong>参数：登录点评账号后返回的一个固定不变的字符串，在<strong>当前这个会话中</strong>固定不变，如果重新登录后会更新，可以近似认为不会变动。</p>
+<p><strong>_token</strong>参数：每次请求都会发生变化。猜测是由其他参数，以某种加密方式得到的字符串，用来在服务器端验证该请求确实是由小程序产生，而不是人工模拟产生的。</p>
+<p><strong>mtsiReferrer</strong>：是一个经过URL编码后的请求项，还原后的内容如下：</p>
+<p><img src="/2022/04/20/dianping-wxmp-api-spider-1/mtsiReferrer_cmp.png" alt="mtsiReferrer_cmp" style="zoom:40%;"></p>
+<p>其中大部分参数，或是无关紧要、可有可无，或是有明确含义、容易构造，只有<strong>_</strong>和<strong>token</strong>的含义尚不清楚。</p>
+<h4 id="请求头分析"><a href="#请求头分析" class="headerlink" title="请求头分析"></a>请求头分析</h4><p>大致分析完请求地址的构成，接下来分析<strong>请求头的参数</strong>：</p>
+<p><img src="/2022/04/20/dianping-wxmp-api-spider-1/header.png" alt="header" style="zoom:40%;"></p>
+<p>大部分参数无关紧要或在多次请求中保持不变，只有<strong>mtgsig</strong>比较复杂，将字典拆分开，可以得到以下几个键值对：</p>
+<p><img src="/2022/04/20/dianping-wxmp-api-spider-1/mtgsig.png" alt="mtgsig" style="zoom:40%;"></p>
+<p><strong>a1</strong>:猜测为http协议版本号，不重要</p>
+<p><strong>a2</strong>:时间戳</p>
+<ul>
+<li>1649261287957 = 2022-04-07 00:08:07</li>
+<li>1649262991238 = 2022-04-07 00:36:31</li>
+</ul>
+<p><strong>a3、a7、x0</strong>:含义未知，但取值相同</p>
+<p><strong>a4、a5、a6、d1</strong>:含义未知，取值不同</p>
+<h4 id="抓包分析小结"><a href="#抓包分析小结" class="headerlink" title="抓包分析小结"></a>抓包分析小结</h4><p>构造请求需要解析<strong>每次发生变化</strong>且<strong>必须提供</strong>的参数，如<strong>时间戳</strong>、<strong>_token</strong>、<strong>mtgsig字典</strong>。</p>
+<p>只有通过找到请求头构造的逻辑，才有可能模拟小程序的数据请求。</p>
+<h4 id="api接口的返回内容分析"><a href="#api接口的返回内容分析" class="headerlink" title="api接口的返回内容分析"></a>api接口的返回内容分析</h4><p>一次返回10个商户的列表信息，以其中单独某个商户为例，包含信息如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br></pre></td><td class="code"><pre><span class="line">&#123;'type': 1,</span><br><span class="line"> 'shopInfo':&#123;</span><br><span class="line">   'adInfo': &#123;......&#125;,</span><br><span class="line">   'adShop': True,</span><br><span class="line">   'authorityLabelColor': '#22A3DD',</span><br><span class="line">   'bookType': '1',</span><br><span class="line">   'branchName': '团结湖店',</span><br><span class="line">   'categoryId': 4447,</span><br><span class="line">   'categoryName': '融合烤肉',</span><br><span class="line">   'cityId': 2,</span><br><span class="line">   'defaultPic': ......,</span><br><span class="line">   'name': '英雄故事地摊烤肉',</span><br><span class="line">   'priceText': '￥98/人',</span><br><span class="line">   'recommendReason': &#123;'alignType': 0, 'bizId': 'index=1,source=ugccontent,type=ugccontent',</span><br><span class="line">      'cornerRadius': 0,</span><br><span class="line">      'fontSize': 12,</span><br><span class="line">      'from': 'ad',</span><br><span class="line">      'iconAlignType': 0,</span><br><span class="line">      'iconCornerRadius': 0,</span><br><span class="line">      'iconHeight': 0,</span><br><span class="line">      'iconTextSpacing': 0,</span><br><span class="line">      'iconType': 0,</span><br><span class="line">      'iconWidth': 0,</span><br><span class="line">      'keepStyle': 0,</span><br><span class="line">      'lineNum': 0,</span><br><span class="line">      'priority': 0,</span><br><span class="line">      'text': '“这家地摊烤肉店就在东三环团结湖北路的路边，很好找”',</span><br><span class="line">      'textType': 1,</span><br><span class="line">      'type': 12&#125;,</span><br><span class="line">     'regionName': '朝阳公园/团结湖',</span><br><span class="line">     'reviewCount': '508条',</span><br><span class="line">     'shopDealInfos': [&#123;'countDownSeconds': 0,</span><br><span class="line">       'dealGroupPrice': 0,</span><br><span class="line">       'dealID': '731428516',</span><br><span class="line">       'dealTitle': '45元 代金券1张',</span><br><span class="line">       'dealType': 2,</span><br><span class="line">       'iconType': 0,</span><br><span class="line">       'iconUrl': &#123;'height': 16,</span><br><span class="line">        'iconType': 0,</span><br><span class="line">        'priority': 0,</span><br><span class="line">        'url': 'https://www.dpfile.com/sc/mobile/mapi-dp-web/search_list_coupon.png',</span><br><span class="line">        'width': 16&#125;,</span><br><span class="line">       'marketPrice': 0,</span><br><span class="line">       'productType': 'spu',</span><br><span class="line">       'subDealTitle': '',</span><br><span class="line">       'weAppShowType': 0&#125;,</span><br><span class="line">      &#123;'countDownSeconds': 0,</span><br><span class="line">       'dealGroupPrice': 0,</span><br><span class="line">       'dealID': '730190633',</span><br><span class="line">       'dealTitle': '168元 九宫格套餐',</span><br><span class="line">       'dealType': 1,</span><br><span class="line">       'iconType': 0,</span><br><span class="line">       'iconUrl': &#123;'height': 16,</span><br><span class="line">        'iconType': 0,</span><br><span class="line">        'priority': 0,</span><br><span class="line">        'url': 'https://www.dpfile.com/sc/mobile/mapi-dp-web/search_list_tuan.png',</span><br><span class="line">        'width': 16&#125;,</span><br><span class="line">       'marketPrice': 0,</span><br><span class="line">       'productType': 'deal',</span><br><span class="line">       'subDealTitle': '',</span><br><span class="line">       'weAppShowType': 0&#125;],</span><br><span class="line">     'shopPower': 45,</span><br><span class="line">     'shopStateInformation': [],</span><br><span class="line">     'shopType': 10,</span><br><span class="line">     'tagList': [&#123;'alignType': 0,</span><br><span class="line">       'backgroundColor': '#F8F6F6',</span><br><span class="line">       'borderColor': '',</span><br><span class="line">       'cornerRadius': 0,</span><br><span class="line">       'fontSize': 11,</span><br><span class="line">       'from': 'ad',</span><br><span class="line">       'icon': '',</span><br><span class="line">       'iconAlignType': 0,</span><br><span class="line">       'iconCornerRadius': 0,</span><br><span class="line">       'iconHeight': 0,</span><br><span class="line">       'iconTextSpacing': 0,</span><br><span class="line">       'iconType': 0,</span><br><span class="line">       'iconWidth': 0,</span><br><span class="line">       'keepStyle': 0,</span><br><span class="line">       'lineNum': 0,</span><br><span class="line">       'priority': 0,</span><br><span class="line">       'text': '有停车场',</span><br><span class="line">       'textColor': '#111111',</span><br><span class="line">       'textType': 0,</span><br><span class="line">       'type': 12&#125;,</span><br><span class="line">      &#123;'alignType': 0,</span><br><span class="line">       'backgroundColor': '#F8F6F6',</span><br><span class="line">       'borderColor': '',</span><br><span class="line">       'cornerRadius': 0,</span><br><span class="line">       'fontSize': 11,</span><br><span class="line">       'from': 'ad',</span><br><span class="line">       'icon': '',</span><br><span class="line">       'iconAlignType': 0,</span><br><span class="line">       'iconCornerRadius': 0,</span><br><span class="line">       'iconHeight': 0,</span><br><span class="line">       'iconTextSpacing': 0,</span><br><span class="line">       'iconType': 0,</span><br><span class="line">       'iconWidth': 0,</span><br><span class="line">       'keepStyle': 0,</span><br><span class="line">       'lineNum': 0,</span><br><span class="line">       'priority': 0,</span><br><span class="line">       'text': '夜宵',</span><br><span class="line">       'textColor': '#111111',</span><br><span class="line">       'textType': 0,</span><br><span class="line">       'type': 12&#125;,</span><br><span class="line">      &#123;'alignType': 0,</span><br><span class="line">       'backgroundColor': '#F8F6F6',</span><br><span class="line">       'borderColor': '',</span><br><span class="line">       'cornerRadius': 0,</span><br><span class="line">       'fontSize': 11,</span><br><span class="line">       'from': 'ad',</span><br><span class="line">       'icon': '',</span><br><span class="line">       'iconAlignType': 0,</span><br><span class="line">       'iconCornerRadius': 0,</span><br><span class="line">       'iconHeight': 0,</span><br><span class="line">       'iconTextSpacing': 0,</span><br><span class="line">       'iconType': 0,</span><br><span class="line">       'iconWidth': 0,</span><br><span class="line">       'keepStyle': 0,</span><br><span class="line">       'lineNum': 0,</span><br><span class="line">       'priority': 0,</span><br><span class="line">       'text': '有包厢',</span><br><span class="line">       'textColor': '#111111',</span><br><span class="line">       'textType': 0,</span><br><span class="line">       'type': 12&#125;,</span><br><span class="line">      &#123;'alignType': 0,</span><br><span class="line">       'backgroundColor': '#F8F6F6',</span><br><span class="line">       'borderColor': '',</span><br><span class="line">       'cornerRadius': 0,</span><br><span class="line">       'fontSize': 11,</span><br><span class="line">       'from': 'ad',</span><br><span class="line">       'icon': '',</span><br><span class="line">       'iconAlignType': 0,</span><br><span class="line">       'iconCornerRadius': 0,</span><br><span class="line">       'iconHeight': 0,</span><br><span class="line">       'iconTextSpacing': 0,</span><br><span class="line">       'iconType': 0,</span><br><span class="line">       'iconWidth': 0,</span><br><span class="line">       'keepStyle': 0,</span><br><span class="line">       'lineNum': 0,</span><br><span class="line">       'priority': 0,</span><br><span class="line">       'text': '卫生间',</span><br><span class="line">       'textColor': '#111111',</span><br><span class="line">       'textType': 0,</span><br><span class="line">       'type': 12&#125;,</span><br><span class="line">      &#123;'alignType': 0,</span><br><span class="line">       'backgroundColor': '#F8F6F6',</span><br><span class="line">       'borderColor': '',</span><br><span class="line">       'cornerRadius': 0,</span><br><span class="line">       'fontSize': 11,</span><br><span class="line">       'from': 'ad',</span><br><span class="line">       'icon': '',</span><br><span class="line">       'iconAlignType': 0,</span><br><span class="line">       'iconCornerRadius': 0,</span><br><span class="line">       'iconHeight': 0,</span><br><span class="line">       'iconTextSpacing': 0,</span><br><span class="line">       'iconType': 0,</span><br><span class="line">       'iconWidth': 0,</span><br><span class="line">       'keepStyle': 0,</span><br><span class="line">       'lineNum': 0,</span><br><span class="line">       'priority': 0,</span><br><span class="line">       'text': '可预订',</span><br><span class="line">       'textColor': '#111111',</span><br><span class="line">       'textType': 0,</span><br><span class="line">       'type': 12&#125;],</span><br><span class="line">     'starScore': '4.60',</span><br><span class="line">     'hasTagList': True,</span><br><span class="line">     'serviceTags': [&#123;'text': '订',</span><br><span class="line">       'url': 'https://www.dpfile.com/sc/mobile/mapi-dp-web/search_list_book.png',</span><br><span class="line">       'width': '32rpx',</span><br><span class="line">       'height': '32rpx'&#125;],</span><br><span class="line">     'labelStyle': 'linear-gradient(to right bottom, rgba(34, 163, 221, 0.7), #22A3DD)',</span><br><span class="line">     'shopIndex': 0,</span><br><span class="line">     'listStart': 0,</span><br><span class="line">     'shopUuid': 'H1fl4Bpnb5OTVLOO',</span><br><span class="line">     'shop_uuid': 'H1fl4Bpnb5OTVLOO',</span><br><span class="line">     'navData': &#123;'url': '/pages/detail/detail?shopUuid=H1fl4Bpnb5OTVLOO&amp;shopType=10&amp;shopStyle=multipic'&#125;,</span><br><span class="line">     'msource': 'mina_food'&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>比较有用的字段有branchName、categoryName、name、regionName、reviewCount、shopUuid、starScore、shopPower，还有一些团购券名称，与web和app的商户列表页所展示的信息基本相同。</p>
+<h3 id="模拟请求压力测试"><a href="#模拟请求压力测试" class="headerlink" title="模拟请求压力测试"></a>模拟请求压力测试</h3><p>在进一步探索关键参数的构造逻辑之前，先对接口的请求频次进行压力测试。</p>
+<p>用同一组header和url，不间断请求并判断返回数据是否正确，直到403或商户列表返回错误。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests, json, time</span><br><span class="line"><span class="keyword">from</span> requests.packages.urllib3.exceptions <span class="keyword">import</span> InsecureRequestWarning</span><br><span class="line">requests.packages.urllib3.disable_warnings(InsecureRequestWarning)</span><br><span class="line">headers = &#123;</span><br><span class="line">          <span class="string">'Host'</span>:	<span class="string">'m.dianping.com'</span>,</span><br><span class="line">          <span class="string">'Referer'</span>:	<span class="string">'https://servicewechat.com/wx734c1ad7b3562129/329/page-frame.html'</span>,</span><br><span class="line">          <span class="string">'User-Agent'</span>: <span class="string">'Mozilla/5.0 (iPhone; CPU iPhone OS 11_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E216 MicroMessenger/8.0.2(0x18000239) NetType/WIFI Language/zh_CN'</span>,</span><br><span class="line">          <span class="string">'openid'</span>:	<span class="string">'pYXXCec7thu1_ppvwZAt4B6pU3oxTU6jYrd0iCmooyA'</span>,</span><br><span class="line">          <span class="string">'mtgsig'</span>:	<span class="string">r'&#123;"a1":"1.1","a2":1649576956647,"a3":"80w9yz927u045u8uz4yu7603332u67uu82uu64655z787978v3655246","a4":"9b97e1b1c93c1ad9b1e1979bd91a3cc95633e5898f29d940","a5":"g3sPYh2cISZaqTNdrtbOPsfP3Q3O6u8+lVKzyvTXTbIe32t6U3IjC/Y/Tm87bnu/KNqPEzBmjUk6g3nChUyp3WEp0sl2FyUtD62LVpSDP8vFbFB/f/sCukwARwtYsSYFk7LakyzeF5cFEYQ99WDNv4BIgchcC3kMez90NkUPW1L/PYWktWMPs574v1qIxfecamp5Kia89K3CXOzXnSMdaEuCsCkeZjUNSh6G0JPLeuoV0pQFp5Nx5mEnXobOE69MoluJWCiFlARaWzvWtN8zKPTNlpFQHbjn//9+JXEEKJdW4r75ijRe2YkAXvhGaW==","a6":"w1.0jdLnqnOZlRK1axXRMjSRs0cmq6XE4uJUA0RqfZsYD3kaMPtZhoxEORJIMUSL1qU7w6/1j1FddF69gYsBPQu/mI3LM/H90x/koo8ZFLb7iNXM9VSyvC45NfnCtPxmt/kwloZqDVffTQev4cxxUNJqPdsQ31q7u8ZlpneqIo5dOgAO10fdMpEjDDCNCBPVAgEZut5WT0gMmO6ve9Iby8npcX76yaHE+LV1qAWeTPvPqKAiQk9Qbi5DTrSg4kHtjXy+Kymys+Idcdv1s4DWz4+GDzgrmzXLxiydnBPvuYYc5NP3zleE6UvKhyL1WphWUr+cfUfmpQFfAcYwZ6JCw7x4V8T2cuD9vt54y2rPoBx8M4h/PmiB30HH+ak7mWgmJJHhU1QCMQZu2YkGQTgTXwNZpRla2O8TSpCTyCNpzMdJ9oqlMCadjgsS2eUuuoD3R0aM3Zx3C9gkc8/3T0jdpXdOqCo47Cd1kFH53/gYdUHTJqOc7IjyIVz+n3PrgbuWW1m6","a7":"wx734c1ad7b3562129","x0":3,"d1":"322ded3253281ee792e15be4dcbd598b"&#125;'</span>,</span><br><span class="line">          <span class="string">'wechatversion'</span>:	<span class="string">'8.0.2'</span>,</span><br><span class="line">          <span class="string">'platformversion'</span>:	<span class="string">'11.3'</span>,</span><br><span class="line">          <span class="string">'channel'</span>:	<span class="string">'weixin'</span>,</span><br><span class="line">          <span class="string">'minaversion'</span>:	<span class="string">'9.4.1'</span>,</span><br><span class="line">          <span class="string">'dpid'</span>:	<span class="string">'pYXXCec7thu1_ppvwZAt4B6pU3oxTU6jYrd0iCmooyA'</span>,</span><br><span class="line">          <span class="string">'openidPlt'</span>:	<span class="string">'oPpUI0UW5pnHRZxIld9vh5vcRWqU'</span>,</span><br><span class="line">          <span class="string">'platform'</span>:	<span class="string">'Android'</span>,</span><br><span class="line">          <span class="string">'sdkversion'</span>:	<span class="string">'2.16.1'</span>,</span><br><span class="line">          <span class="string">'Accept-Language'</span>:	<span class="string">'zh-cn'</span>,</span><br><span class="line">          <span class="string">"Content-type"</span>: <span class="string">"application/json"</span>,</span><br><span class="line">          <span class="string">'minaname'</span>:	<span class="string">'dianping-wxapp'</span>,</span><br><span class="line">          <span class="string">'channelversion'</span>:	<span class="string">'8.0.2'</span>,</span><br><span class="line">          <span class="string">'Accept'</span>:	<span class="string">'*/*'</span>,</span><br><span class="line">          <span class="string">'Accept-Encoding'</span>:	<span class="string">'br, gzip, deflate'</span>,</span><br><span class="line">          <span class="string">'token'</span>: <span class="string">'80af43d7470060da45b5a462fa1c492fd1ec9faa541cc32cdf8eda99894d4483d43f1a9e76183bbc9a1c3def6db848b12fabc6c345382ed6abcd7480992df2002b7db8e89045c0e9c2ee2baf030b3bd63f000557225b3d9b5349d0876b2f693b'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">url = <span class="string">r"https://m.dianping.com/wxmapi/search?optimus_uuid=17ff3533648c8-368bd0eeacae20-0-0-17ff3533648c8&amp;optimus_platform=13&amp;optimus_partner=203&amp;optimus_risk_level=71&amp;optimus_code=10&amp;_=1649576957098&amp;cookieId=pYXXCec7thu1_ppvwZAt4B6pU3oxTU6jYrd0iCmooyA&amp;dpid=pYXXCec7thu1_ppvwZAt4B6pU3oxTU6jYrd0iCmooyA&amp;token=80af43d7470060da45b5a462fa1c492fd1ec9faa541cc32cdf8eda99894d4483d43f1a9e76183bbc9a1c3def6db848b12fabc6c345382ed6abcd7480992df2002b7db8e89045c0e9c2ee2baf030b3bd63f000557225b3d9b5349d0876b2f693b&amp;cityId=2&amp;locateCityid=1&amp;filterCategory=%5B10%5D&amp;categoryId=10&amp;sortId=0&amp;regionId=0&amp;start=0&amp;limit=10&amp;mtsiReferrer=%252Fpages%252Flist%252Flist%253F_%253D1649576957098%2526cookieId%253DpYXXCec7thu1_ppvwZAt4B6pU3oxTU6jYrd0iCmooyA%2526dpid%253DpYXXCec7thu1_ppvwZAt4B6pU3oxTU6jYrd0iCmooyA%2526token%253D80af43d7470060da45b5a462fa1c492fd1ec9faa541cc32cdf8eda99894d4483d43f1a9e76183bbc9a1c3def6db848b12fabc6c345382ed6abcd7480992df2002b7db8e89045c0e9c2ee2baf030b3bd63f000557225b3d9b5349d0876b2f693b%2526cityId%253D2%2526locateCityid%253D1%2526filterCategory%253D10%2526categoryId%253D10%2526sortId%253D0%2526regionId%253D0%2526start%253D0%2526limit%253D10&amp;device_system=IOS&amp;wxmp_version=9.4.1&amp;_token=eJxVjEmPm1AQhP8LV1vCLI8HI%2BVgY3bbeNhhNIfHjjGLzU6U%2Fx5PModEavVXVd2qn9hTibG33RbrO%2ByNYGgOQIYDFMfRWyz6L4MkSW6x8OkcsbcPCoItQ3CfX4Hx8h8Q7LYESbGf238kSb%2Fm60d5vWAtikqUJR3eJegZ5Xj7x6RNE0c5quvk%2Fq%2FGttjfe95UyZ%2BFvYoq61X0YvlN9M3%2Bm12R1dgblqirY3f9QK77d1yN9kRBHdhC0q568T5kxbtNS%2BQ%2BUNw8Osrnyu6rd1XU2Tq9U8ZNXWHl7jM%2B3vnwQdSDl02c4CxEbWajdrn7dSrMbRuHxHxpwnNGNA15iQx9yq%2FXI57uUBjEOGSzacWHWuaSIJ1Pq%2ByPV2qDCzWdloq21JK4GSQ6hb4s%2Bl6LzjaFQ%2BCMNzDys3BjzlJ8ZQjHwkuWH4NstpaLF0vaGMap6D9atVrKkS5yYE29OTJnspMpoQVz4abH1V%2FDQ1GzHPLu4gw1wG4aHiiPlUvFwqYnRBmmc0hYEM1rt9%2FbcCWeJuI3DdE5swGnHIHQGfRQcu1kYA0tccqmgWvhrLVcFaKHeFNCZ8f2ZFl%2B5jfdMkvxpLiSEISgKhnBOAA3Mu%2FaSbenw2NoNdXOxPGE%2BEVUBQR96eBHvgoyKQutXnNZPToX1G1p5C7XxESTwsdsUGSDGzxPZfitfqq51aTe4uaPkoZxZbrVVTk4wXE6R1bPmyBo8QnJuwAXjs68VjI6%2BfrlOPZUwsOAhMpevGThZfPsfNAybIfunbRIQhrRXL4DXdjHHvL0hPMX9Vns2FZRkTFl6DEYU%2BVwa66hhmOTquY4QuPRaYhzYqTw61BXjFehfCWr1rLQY%2Bk3hgk3%2B1wX7U75gf36Dd1RFac%3D"</span></span><br><span class="line">cnt = <span class="number">1</span></span><br><span class="line">start_time = time.time()</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    r=requests.get(url, headers=headers, verify=<span class="literal">False</span>)</span><br><span class="line">    time.sleep(<span class="number">0.05</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        dat = json.loads(r.content.decode(<span class="string">'utf-8'</span>))</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        end_time = time.time()</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        mch_cnt = len(dat[<span class="string">'data'</span>][<span class="string">'list'</span>])</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        end_time = time.time()</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">if</span> mch_cnt != <span class="number">10</span>:</span><br><span class="line">        end_time = time.time()</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    print(<span class="string">'压力测试第&#123;0&#125;次，累计返回商户数量&#123;1&#125;个，返回code&#123;2&#125;，当次商户列表数量&#123;3&#125;......'</span>.format(cnt, cnt*<span class="number">10</span>,r.status_code,mch_cnt))</span><br><span class="line">    cnt += <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> cnt&gt;<span class="number">10000</span>:</span><br><span class="line">        end_time = time.time()</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">print(<span class="string">'-------测试结束-------'</span>)</span><br><span class="line">print(<span class="string">'耗时&#123;0&#125;秒，共请求&#123;1&#125;次，累计返回商户&#123;2&#125;个'</span>.format(int(end_time-start_time), cnt, cnt*<span class="number">10</span>))</span><br></pre></td></tr></table></figure>
+<p>第一轮测试，共请求3580次后出现错误，耗时约2500秒，假如不考虑休息时间，完成400w商户的爬取需80小时左右。</p>
+<p>但是经过若干轮测试后，每轮能爬取的商户数量逐渐减少。</p>
+<p>最后一轮测试，耗时503秒，共请求833次，累计返回商户8330个，其后开始出现滑块验证，返回内容如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;'msg': '您的网络好像不太给力，请稍后再试',</span><br><span class="line"> 'code': 406,</span><br><span class="line"> 'customData': &#123;'verifyPageUrl': 'https://verify.meituan.com/v2/app/general_page?action=spiderindefence&amp;requestCode=af7323bc14f94bfda66cd1c79001c6f7&amp;platform=13&amp;adaptor=auto&amp;succCallbackUrl=https://optimus-mtsi.meituan.com/optimus/verifyResult',</span><br><span class="line">  'riskLevel': '71',</span><br><span class="line">  'imageUrl': 'https://verify.meituan.com/v2/captcha?action=spiderindefence&amp;request_code=af7323bc14f94bfda66cd1c79001c6f7',</span><br><span class="line">  'requestCode': 'af7323bc14f94bfda66cd1c79001c6f7',</span><br><span class="line">  'verifyUrl': 'https://optimus-mtsi.meituan.com/optimus/verify?request_code=af7323bc14f94bfda66cd1c79001c6f7'&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>根据链接中的关键字<code>spiderindefence</code>，可能击中反爬逻辑。</p>
+<p>暂时没有更好的解决方案。</p>
+<h3 id="反编译小程序"><a href="#反编译小程序" class="headerlink" title="反编译小程序"></a>反编译小程序</h3><p>鉴于压力测试发现比较容易击中反爬逻辑，可能很难完成400w商户的爬取工作，中止进一步探索。</p>
+<p>如果要进一步挖掘关键参数的构造特征，可以通过反编译微信小程序的源代码，进一步分析背后的js逻辑。</p>
+<p>反编译小程序可以参考<a href="https://blog.csdn.net/qappleh/article/details/99717651" target="_blank" rel="noopener">文章1</a>、<a href="https://blog.csdn.net/septwolves2015/article/details/114405694" target="_blank" rel="noopener">文章2</a>、<a href="http://xuedingmiao.com/blog/xcx_unpack.html" target="_blank" rel="noopener">文章3</a>、<a href="http://xuedingmiao.com/blog/xcx_unpack_sub_package.html" target="_blank" rel="noopener">文章4</a>、<a href="https://ukm028kzyr.feishu.cn/docs/doccnOSxESTO6H2MjfTG7ePftyd" target="_blank" rel="noopener">文章5</a>，能否成功看运气，以及微信未来更新小程序编译机制也会导致现有工具失效。</p>
+<p>有现成的反编译<a href="https://pan.baidu.com/s/1-xTHQiZC4s4GeDEXDnMKSw?pwd=vq4b#list/path=%2F" target="_blank" rel="noopener">工具</a>，但是需要收费，也可以按照上述文章去Github找源码进行尝试。</p>
+<p>点评最新版本的小程序，反编译成功后的<a href="WXAPP_DP_crack.zip" title="大众点评反编译源码下载">源代码下载</a>。</p>
+<p>反编译成功后，用<a href="https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html" target="_blank" rel="noopener">微信小程序IDE</a>打开，我们主要关注美食页面的js逻辑，可以按如下配置编译：</p>
+<p><img src="/2022/04/20/dianping-wxmp-api-spider-1/编译路径.png" alt="header" style="zoom:40%;"></p>
+<p>小程序的基本开发逻辑，可参考<a href="https://developers.weixin.qq.com/miniprogram/dev/framework/" target="_blank" rel="noopener">官方文档</a>，但我们不需要关注细节，只需要找到<strong>美食页下拉后</strong>调用的函数入口。</p>
+<p>根据官方文档描述，小程序页面下拉到底后，会自动调用页面的<code>onPullDownRefresh</code>函数，如图所示：</p>
+<p><img src="/2022/04/20/dianping-wxmp-api-spider-1/jsapi.png" alt="header" style="zoom:40%;"></p>
+<p>后续请求参数的构造可以从这个入口开始分析。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/爬虫/" rel="tag"><i class="fa fa-tag"></i> 爬虫</a>
+          
+            <a href="/tags/大众点评/" rel="tag"><i class="fa fa-tag"></i> 大众点评</a>
+          
+            <a href="/tags/微信小程序/" rel="tag"><i class="fa fa-tag"></i> 微信小程序</a>
+          
+            <a href="/tags/Charles/" rel="tag"><i class="fa fa-tag"></i> Charles</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/10/scrapy-tut-3-download/" rel="next" title="Scrapy教程（3）：如何下载文件">
+                <i class="fa fa-chevron-left"></i> Scrapy教程（3）：如何下载文件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Ge Tuojian</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#能够获取点评商户列表的入口分析"><span class="nav-number">1.</span> <span class="nav-text">能够获取点评商户列表的入口分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前置准备"><span class="nav-number">2.</span> <span class="nav-text">前置准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#抓包分析"><span class="nav-number">3.</span> <span class="nav-text">抓包分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#URL分析"><span class="nav-number">3.1.</span> <span class="nav-text">URL分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求头分析"><span class="nav-number">3.2.</span> <span class="nav-text">请求头分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#抓包分析小结"><span class="nav-number">3.3.</span> <span class="nav-text">抓包分析小结</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#api接口的返回内容分析"><span class="nav-number">3.4.</span> <span class="nav-text">api接口的返回内容分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟请求压力测试"><span class="nav-number">4.</span> <span class="nav-text">模拟请求压力测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反编译小程序"><span class="nav-number">5.</span> <span class="nav-text">反编译小程序</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ge Tuojian</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
